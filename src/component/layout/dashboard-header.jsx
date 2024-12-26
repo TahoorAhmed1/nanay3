@@ -102,8 +102,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
     const reader = new FileReader();
     reader.onloadend = () => {
       setImageUri(reader.result);
-console.log('imageUri', reader.result)
-
+      console.log("imageUri", reader.result);
     };
 
     reader.onerror = () => {
@@ -254,34 +253,32 @@ console.log('imageUri', reader.result)
           { heading: "Detail", key: "detail" },
         ];
 
-        const [isLoading,setLoading]=useState(false)
+  const [isLoading, setLoading] = useState(false);
 
   const save = () => {
-    setLoading(true)
+    setLoading(true);
     Put(
       "auth",
       {
         userData,
-        image:imageUri
+        image: imageUri,
       },
       userData?._id
     )
       .then((res) => {
         showToast("Profile Update Successfully", "success");
         dispatch(add({ ...res.data?.data }));
-        setTimeout(()=>{
-          setLoading(false)
+        setTimeout(() => {
+          setLoading(false);
           setModalOpen(false);
-  
-        },2000)
+        }, 2000);
       })
       .catch((err) => {
         // console.log(err);
-        setTimeout(()=>{
-          setLoading(false)
+        setTimeout(() => {
+          setLoading(false);
           setModalOpen(false);
-  
-        },2000)
+        }, 2000);
       });
   };
 
@@ -713,11 +710,15 @@ console.log('imageUri', reader.result)
                 {isEdit ? (
                   <button>
                     <button
-                    disabled={isLoading}
+                      disabled={isLoading}
                       className="w-20 mx-auto px-2 py-1 text-center text-[16px] bg-red-500 text-white font-medium rounded-md  hover:bg-red-600"
                       onClick={save}
                     >
-                      {isLoading?<BiLoader className="w-7 h-7 mx-auto animate-spin"/> :"Save"}
+                      {isLoading ? (
+                        <BiLoader className="w-7 h-7 mx-auto animate-spin" />
+                      ) : (
+                        "Save"
+                      )}
                     </button>
                   </button>
                 ) : (
@@ -740,7 +741,7 @@ console.log('imageUri', reader.result)
                       focus:outline-none "
                   >
                     <img
-                      src={imageUri || userData?.image ||upload }
+                      src={imageUri || userData?.image || upload}
                       alt="Uploaded Preview"
                       className="w-full h-full rounded-full object-cover"
                     />
@@ -856,7 +857,10 @@ console.log('imageUri', reader.result)
                   <TextArea
                     disabled={isEdit ? false : true}
                     // type="text"
-                    value={ model.parentJobDescription}
+                    value={
+                      userData?.parentJobDescription ||
+                      model.parentJobDescription
+                    }
                     onChange={(e) =>
                       fillModel("parentJobDescription", e.target.value)
                     }
@@ -876,7 +880,7 @@ console.log('imageUri', reader.result)
                   <TextArea
                     disabled={isEdit ? false : true}
                     // type="text"
-                    value={model.aboutYourself}
+                    value={userData?.aboutYourself || model.aboutYourself}
                     onChange={(e) => fillModel("aboutYourself", e.target.value)}
                     placeholder={userData?.aboutYourself || "message"}
                     rows={5}
