@@ -247,7 +247,6 @@ setSingleBooking({})
   const getAllData = () => {
     Get("/booking", null, { nannyId: userData?._id })
       .then((res) => {
-        console.log('res', res)
         if (res?.data) {
           const bookingPromises2 = res.data.map((item, index) =>
             Get(`/auth/${item.parentId}`).then((res) => {
