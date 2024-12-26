@@ -856,7 +856,7 @@ console.log('imageUri', reader.result)
                   <TextArea
                     disabled={isEdit ? false : true}
                     // type="text"
-                    value={userData?.parentJobDescription || model.parentJobDescription}
+                    value={ model.parentJobDescription}
                     onChange={(e) =>
                       fillModel("parentJobDescription", e.target.value)
                     }
