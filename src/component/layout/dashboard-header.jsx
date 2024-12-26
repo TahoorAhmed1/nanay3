@@ -21,6 +21,7 @@ import Table from "@/component/common/table";
 import { CgClose } from "react-icons/cg";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import { BiLoader } from "react-icons/bi";
 
 const Requests = [
   { heading: "Sno", key: "Sno" },
@@ -253,7 +254,10 @@ console.log('imageUri', reader.result)
           { heading: "Detail", key: "detail" },
         ];
 
+        const [isLoading,setLoading]=useState(false)
+
   const save = () => {
+    setLoading(true)
     Put(
       "auth",
       {
@@ -265,10 +269,19 @@ console.log('imageUri', reader.result)
       .then((res) => {
         showToast("Profile Update Successfully", "success");
         dispatch(add({ ...res.data?.data }));
-        setModalOpen(false);
+        setTimeout(()=>{
+          setLoading(true)
+          setModalOpen(false);
+  
+        },2000)
       })
       .catch((err) => {
         // console.log(err);
+        setTimeout(()=>{
+          setLoading(false)
+          setModalOpen(false);
+  
+        },2000)
       });
   };
 
@@ -701,10 +714,11 @@ console.log('imageUri', reader.result)
                 {isEdit ? (
                   <button>
                     <button
+                    disabled={isLoading}
                       className="px-8 py-1 text-[18px] bg-red-500 text-white font-medium rounded-md  hover:bg-red-600"
                       onClick={save}
                     >
-                      Save
+                      {isLoading?<BiLoader className="w-7 h-7"/> :"Save"}
                     </button>
                   </button>
                 ) : (
