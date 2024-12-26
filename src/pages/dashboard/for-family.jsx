@@ -325,13 +325,6 @@ export default function ForFamily() {
     // Update the timing in booking
     setBooking({ ...booking, timing: selectedTiming });
   };
-  const handleTimingtoSelection = (e) => {
-    const selectedTiming = e.target.value;
-
-    // Update the timing in booking
-    setBooking({ ...booking, to: selectedTiming });
-  };
-
   const generateSchedule = () => {
     if (!booking?.timing || !booking?.to) {
       return "Please select valid days and timings.";
@@ -384,6 +377,16 @@ export default function ForFamily() {
     // Different dates
     return `${startFormattedDate} ${startPeriod} (${startTime}) to ${endFormattedDate} ${endPeriod} (${endTime})`;
   };
+  
+  const handleTimingtoSelection = (e) => {
+    const selectedTiming = e.target.value;
+    
+    // Update the timing in booking
+    setBooking({ ...booking, to: selectedTiming });
+    generateSchedule()
+  };
+
+ 
   
   
 
