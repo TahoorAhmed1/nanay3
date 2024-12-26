@@ -270,7 +270,7 @@ console.log('imageUri', reader.result)
         showToast("Profile Update Successfully", "success");
         dispatch(add({ ...res.data?.data }));
         setTimeout(()=>{
-          setLoading(true)
+          setLoading(false)
           setModalOpen(false);
   
         },2000)
@@ -494,7 +494,6 @@ console.log('imageUri', reader.result)
       });
   };
 
-  console.log('userData', userData)
   return (
     <>
       <header>
@@ -715,10 +714,10 @@ console.log('imageUri', reader.result)
                   <button>
                     <button
                     disabled={isLoading}
-                      className="px-8 py-1 text-[18px] bg-red-500 text-white font-medium rounded-md  hover:bg-red-600"
+                      className="w-20 mx-auto px-2 py-1 text-center text-[16px] bg-red-500 text-white font-medium rounded-md  hover:bg-red-600"
                       onClick={save}
                     >
-                      {isLoading?<BiLoader className="w-7 h-7"/> :"Save"}
+                      {isLoading?<BiLoader className="w-7 h-7 mx-auto animate-spin"/> :"Save"}
                     </button>
                   </button>
                 ) : (
@@ -804,7 +803,7 @@ console.log('imageUri', reader.result)
                   <select
                     name="serviceType"
                     disabled={isEdit ? false : true}
-                    value={model.serviceType || ""}
+                    value={userData?.serviceType || model.serviceType || ""}
                     onChange={(e) => fillModel("serviceType", e.target.value)}
                     className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
                   >
@@ -823,7 +822,7 @@ console.log('imageUri', reader.result)
                   <select
                     name="region"
                     disabled={isEdit ? false : true}
-                    value={model.region || ""}
+                    value={userData?.region || model.region || ""}
                     onChange={(e) => fillModel("region", e.target.value)}
                     className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
                   >
@@ -840,7 +839,7 @@ console.log('imageUri', reader.result)
                   <InputField
                     disabled={isEdit ? false : true}
                     type="text"
-                    value={model.zipCode}
+                    value={userData?.zipCode || model.zipCode || ""}
                     onChange={(e) => fillModel("zipCode", e.target.value)}
                     placeholder={userData?.zipCode}
                     inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] 
@@ -857,7 +856,7 @@ console.log('imageUri', reader.result)
                   <TextArea
                     disabled={isEdit ? false : true}
                     // type="text"
-                    value={model.parentJobDescription}
+                    value={userData?.parentJobDescription || model.parentJobDescription}
                     onChange={(e) =>
                       fillModel("parentJobDescription", e.target.value)
                     }
