@@ -153,9 +153,8 @@ export default function ForNanny() {
         setTimeout(() => {
           setModalOpen(false);
           setAcceptLoading(false);
-          setModalOpenDetail(false)
-setSingleBooking({})
-
+          setModalOpenDetail(false);
+          setSingleBooking({});
         }, 2000);
       })
       .catch((err) => {
@@ -163,8 +162,8 @@ setSingleBooking({})
         setTimeout(() => {
           setAcceptLoading(false);
           setModalOpen(false);
-          setModalOpenDetail(false)
-setSingleBooking({})
+          setModalOpenDetail(false);
+          setSingleBooking({});
         }, 2000);
       });
   };
@@ -185,16 +184,16 @@ setSingleBooking({})
           setModalOpen(false);
 
           setDeclineLoading(false);
-          setModalOpenDetail(false)
-          setSingleBooking({})
+          setModalOpenDetail(false);
+          setSingleBooking({});
         }, 2000);
       })
       .catch((err) => {
         showToast("Error while booking", "error");
         setTimeout(() => {
           setModalOpen(false);
-          setModalOpenDetail(false)
-setSingleBooking({})
+          setModalOpenDetail(false);
+          setSingleBooking({});
           setDeclineLoading(false);
         }, 2000);
       });
@@ -259,7 +258,7 @@ setSingleBooking({})
                 childrenAges: item.childrenAges.join(", "),
                 schedule: item.schedule,
                 budget: item.budget,
-                createdAt:item?.createdAt,
+                createdAt: item?.createdAt,
                 status: (
                   <span
                     className={`font-bold capitalize ${
@@ -304,7 +303,28 @@ setSingleBooking({})
     getAllData();
   }, []);
 
-  console.log("allDatasource", singleBooking);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10; // Change this to adjust the number of rows per page
+
+  // Calculate total pages
+  const totalPages = Math.ceil(allDatasource.length / rowsPerPage);
+
+  // Get the data for the current page
+  const paginatedData = allDatasource
+    ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    ?.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
   return (
     <>
@@ -333,107 +353,132 @@ setSingleBooking({})
         </div>
       )}
       <div className=" px-3 md:px-6">
-       <div className="bg-white container mx-auto  w-full mb-20 shadow-lg rounded-lg overflow-hidden ">
-       { allDatasource.length == 0 ? <div className="flex w-full  min-h-[60vh] mx-auto justify-center items-center "><BiLoader className="w-8 h-8 mx-auto animate-spin "/></div>
-        :<div className="overflow-x-auto min-h-screen font-montserrat">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gradient-to-r to-orange-600 w-full via-orange-500 from-[#FF6F61] text-white">
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    S.No
-                  </th>
-                  <th className="py-4 px-6  text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Full Name
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Budget
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Children Count
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Children Ages
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Schedule
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Region
-                  </th>
-                  <th className="py-4 px-6 text-left text-[13px] font-semibold  w-[300px] uppercase tracking-wider">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-         
-         
-       
-          
-             <tbody className="divide-y divide-gray-200 min-h-screen w-full">
-                {allDatasource?.sort((a, b) => {
-                return new Date(b.createdAt) - new Date(a.createdAt);
-              })?.map((item, index) => (
-                  <tr
-                    key={index}
-                    className={`${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-blue-50 transition-colors duration-200 font-medium w-full`}
-                  >
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-800">
-                    {index+1}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-700 font-medium">
-                      {item.firstName}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-700">
-                      {item.email}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-700">
-                      ${item.budget}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-700">
-                      {item.location || "N/A"}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-700">
-                      {item.childrenCount || "N/A"}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-700">
-                      {item.childrenAges || "N/A"}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-700 max-w-[300px]">
-                      {item.schedule || "N/A"}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px]">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          item.status === "approved"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
-                        } capitalize`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-600">
-                      {item.region}
-                    </td>
-                    <td className="py-4 px-6 text-sm w-[300px] text-gray-600">
-                      {item.detail}
-                    </td>
+      <div className=" container mx-auto  w-full mb-20 rounded-lg overflow-hidden ">
+      {allDatasource.length == 0 ? (
+            <div className="flex w-full  min-h-[60vh] mx-auto justify-center items-center ">
+              <BiLoader className="w-8 h-8 mx-auto animate-spin " />
+            </div>
+          ) : (
+
+            <>
+            <div className="overflow-x-auto  font-montserrat">
+             <table className="w-full shadow-lg rounded-lg overflow-scroll">
+             <thead>
+                <tr className="bg-gradient-to-r from-[#FF6F61] to-[#FF9473] text-white">
+                <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      S.No
+                    </th>
+                    <th className="py-4 px-6  text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Full Name
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Budget
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Location
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Children Count
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Children Ages
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Schedule
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Region
+                    </th>
+                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                      Action
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>}
+                </thead>
+
+                <tbody className="divide-y divide-gray-200 ">
+                  {paginatedData                 
+                    ?.map((item, index) => (
+                      <tr
+                     key={index}
+                     className={`${
+                       index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                     } hover:bg-[#FFEBE9] transition-colors duration-200`}
+                   >
+                        <td className="py-4 px-6 text-sm w-full text-gray-800">
+                          {index + 1}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-700 font-medium">
+                          {item.firstName}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-700">
+                          {item.email}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-700">
+                          ${item.budget}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-700">
+                          {item.location || "N/A"}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-700">
+                          {item.childrenCount || "N/A"}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-700">
+                          {item.childrenAges || "N/A"}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-700 max-w-[500px]">
+                          {item.schedule || "N/A"}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              item.status === "approved"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-blue-100 text-blue-800"
+                            } capitalize`}
+                          >
+                            {item.status}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-600">
+                          {item.region}
+                        </td>
+                        <td className="py-4 px-6 text-sm w-full text-gray-600">
+                          {item.detail}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+              <div className="flex items-center justify-center my-6 space-x-4">
+               <button
+                 onClick={handlePrevious}
+                 disabled={currentPage === 1}
+                 className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+               >
+                 Previous
+               </button>
+               <span className="text-gray-700 font-medium">
+                 Page <span className="font-bold">{currentPage}</span> of{" "}
+                 <span className="font-bold">{totalPages}</span>
+               </span>
+               <button
+                 onClick={handleNext}
+                 disabled={currentPage === totalPages}
+                 className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+               >
+                 Next
+               </button>
+             </div>
+            </>
+
+          )}
         </div>
       </div>
       {/* <List data={listData} getDataById={getDataById} modalData={modalData} /> */}
@@ -639,67 +684,67 @@ setSingleBooking({})
                     <li>No message available.</li>
                   )}
                 </div>
-                {(singleBooking?.status == "pending" && 
-                    <div className="">
-                      <h3 className="text-sm font-semibold">
-                        Please update this booking status?
-                      </h3>
-                      <div className="flex my-2 gap-4">
+                {singleBooking?.status == "pending" && (
+                  <div className="">
+                    <h3 className="text-sm font-semibold">
+                      Please update this booking status?
+                    </h3>
+                    <div className="flex my-2 gap-4">
+                      <button
+                        disabled={acceptLoading}
+                        className="rounded-md w-[100px] py-1 text-center bg-blue-500/85 text-white"
+                        onClick={approvedBooking}
+                      >
+                        {acceptLoading ? (
+                          <BiLoader className="h-5 w-5 mx-auto animate-spin" />
+                        ) : (
+                          "Accept"
+                        )}
+                      </button>
+                      <button
+                        className={`rounded-md w-[100px] py-1 text-center text-white ${
+                          isReject ? "bg-gray-600/85" : "bg-red-600/85"
+                        }`}
+                        onClick={() => setIsReject(!isReject)}
+                      >
+                        {isReject ? "cancel" : "Reject"}
+                      </button>
+                    </div>
+                    {isReject && (
+                      <>
+                        <div className="my-4">
+                          <TextArea
+                            type="text"
+                            label="Reason"
+                            rows={3}
+                            className=""
+                            value={model.rejectReason}
+                            onChange={(e) =>
+                              fillModel("rejectReason", e.target.value)
+                            }
+                          />
+                        </div>
                         <button
-                          disabled={acceptLoading}
-                          className="rounded-md w-[100px] py-1 text-center bg-blue-500/85 text-white"
-                          onClick={approvedBooking}
+                          disabled={declineLoading}
+                          className="rounded-md border w-[100px] py-1 text-center bg-gray-950/85  text-white   "
+                          onClick={RejectBooking}
                         >
-                          {acceptLoading ? (
+                          {declineLoading ? (
                             <BiLoader className="h-5 w-5 mx-auto animate-spin" />
                           ) : (
-                            "Accept"
+                            "Submit"
                           )}
                         </button>
-                        <button
-                          className={`rounded-md w-[100px] py-1 text-center text-white ${
-                            isReject ? "bg-gray-600/85" : "bg-red-600/85"
-                          }`}
-                          onClick={() => setIsReject(!isReject)}
-                        >
-                          {isReject ? "cancel" : "Reject"}
-                        </button>
-                      </div>
-                      {isReject && (
-                        <>
-                          <div className="my-4">
-                            <TextArea
-                              type="text"
-                              label="Reason"
-                              rows={3}
-                              className=""
-                              value={model.rejectReason}
-                              onChange={(e) =>
-                                fillModel("rejectReason", e.target.value)
-                              }
-                            />
-                          </div>
-                          <button
-                            disabled={declineLoading}
-                            className="rounded-md border w-[100px] py-1 text-center bg-gray-950/85  text-white   "
-                            onClick={RejectBooking}
-                          >
-                            {declineLoading ? (
-                              <BiLoader className="h-5 w-5 mx-auto animate-spin" />
-                            ) : (
-                              "Submit"
-                            )}
-                          </button>
-                        </>
-                      )}
-                      <Toast
-                        message={toast.message}
-                        type={toast.type}
-                        isVisible={toast.isVisible}
-                        onClose={() => setToast({ ...toast, isVisible: false })}
-                      />
-                    </div>
-                  )}
+                      </>
+                    )}
+                    <Toast
+                      message={toast.message}
+                      type={toast.type}
+                      isVisible={toast.isVisible}
+                      onClose={() => setToast({ ...toast, isVisible: false })}
+                    />
+                  </div>
+                )}
               </div>
               <button
                 onClick={() => {

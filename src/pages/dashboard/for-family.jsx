@@ -450,7 +450,29 @@ export default function ForFamily() {
     getAllData();
   }, []);
 
-  console.log("allDatasource", allDatasource);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10; // Change this to adjust the number of rows per page
+
+  // Calculate total pages
+  const totalPages = Math.ceil(allDatasource.length / rowsPerPage);
+
+  // Get the data for the current page
+  const paginatedData = allDatasource
+    ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    ?.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+
+  const handlePrevious = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  
   return (
     <>
       <Helmet>
@@ -480,86 +502,93 @@ export default function ForFamily() {
       )}
       <>
         {isOpenTable ? (
-          <div className=" px-3 md:px-6">
-            <div className="bg-white container mx-auto  w-full mb-20 shadow-lg rounded-lg overflow-hidden ">
-              {allDatasource?.length == 0 ? (
-                <div className="flex w-full  min-h-[60vh] mx-auto justify-center items-center ">
-                  <BiLoader className="w-8 h-8 mx-auto animate-spin " />
-                </div>
-              ) : (
-                <div className="overflow-x-auto  w-full min-h-screen font-montserrat">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gradient-to-r bg-[#FF6F61] text-white">
-                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
-                          S.No
-                        </th>
-                    
-                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
-                          Location
-                        </th>
-                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
-                          Children Count
-                        </th>
-                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
-                          Children Ages
-                        </th>
-                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
-                          Schedule
-                        </th>
-                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
-                          Status
-                        </th>
-                     
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 min-h-screen w-full">
-                      {allDatasource
-                        ?.sort((a, b) => {
-                          return new Date(b.createdAt) - new Date(a.createdAt);
-                        })
-                        ?.map((item, index) => (
-                          <tr
-                            key={index}
-                            className={`${
-                              index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                            } hover:bg-blue-50 transition-colors duration-200 font-medium w-full`}
-                          >
-                            <td className="py-4 px-6 text-sm w-[200px] text-gray-800">
-                              {index+1}
-                            </td>
-                       
-                            <td className="py-4 px-6 text-sm w-[200px] text-gray-700">
-                              {item.location || "N/A"}
-                            </td>
-                            <td className="py-4 px-6 text-sm w-[200px] text-gray-700">
-                              {item.childrenCount || "N/A"}
-                            </td>
-                            <td className="py-4 px-6 text-sm w-[200px] text-gray-700">
-                              {item.childrenAges || "N/A"}
-                            </td>
-                            <td className="py-4 px-6 text-sm w-[200px] text-gray-700 max-w-[200px]">
-                              {item.schedule || "N/A"}
-                            </td>
-                            <td className="py-4 px-6 text-sm w-[200px]">
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  item.status === "approved"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-blue-100 text-blue-800"
-                                } capitalize`}
-                              >
-                                {item.status}
-                              </span>
-                            </td>
-                         
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+          <div className="md:px-6 px-3 mb-20 ">
+            
+            <div className="  container mx-auto  w-full  rounded-lg overflow-x-auto ">
+             <table className="w-full shadow-lg rounded-lg overflow-scroll">
+               <thead>
+                 <tr className="bg-gradient-to-r from-[#FF6F61] to-[#FF9473] text-white">
+                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
+                     S.No
+                   </th>
+                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
+                     Location
+                   </th>
+                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
+                     Children Count
+                   </th>
+                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
+                     Children Ages
+                   </th>
+                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
+                     Schedule
+                   </th>
+                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
+                     Status
+                   </th>
+                 </tr>
+               </thead>
+               <tbody className="divide-y divide-gray-200">
+                 {paginatedData?.map((item, index) => (
+                   <tr
+                     key={index}
+                     className={`${
+                       index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                     } hover:bg-[#FFEBE9] transition-colors duration-200`}
+                   >
+                     <td className="py-4 px-6 text-sm text-gray-800 font-medium">
+                       {(currentPage - 1) * rowsPerPage + index + 1}
+                     </td>
+                     <td className="py-4 px-6 text-sm text-gray-700">
+                       {item.location || "N/A"}
+                     </td>
+                     <td className="py-4 px-6 text-sm text-gray-700">
+                       {item.childrenCount || "N/A"}
+                     </td>
+                     <td className="py-4 px-6 text-sm text-gray-700">
+                       {item.childrenAges || "N/A"}
+                     </td>
+                     <td className="py-4 px-6 text-sm text-gray-700 max-w-[200px]">
+                       {item.schedule || "N/A"}
+                     </td>
+                     <td className="py-4 px-6 text-sm">
+                       <span
+                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                           item.status === "approved"
+                             ? "bg-green-100 text-green-800"
+                             : "bg-blue-100 text-blue-800"
+                         } capitalize`}
+                       >
+                         {item.status}
+                       </span>
+                     </td>
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+       
+             {/* Pagination Controls */}
+           </div>
+             <div className="flex items-center justify-center my-6 space-x-4">
+               <button
+                 onClick={handlePrevious}
+                 disabled={currentPage === 1}
+                 className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+               >
+                 Previous
+               </button>
+               <span className="text-gray-700 font-medium">
+                 Page <span className="font-bold">{currentPage}</span> of{" "}
+                 <span className="font-bold">{totalPages}</span>
+               </span>
+               <button
+                 onClick={handleNext}
+                 disabled={currentPage === totalPages}
+                 className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+               >
+                 Next
+               </button>
+             </div>
           </div>
         ) : (
           <div className="md:px-6 px-3  md:mb-[50px] mb-[80px]">
