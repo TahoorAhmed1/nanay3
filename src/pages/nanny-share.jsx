@@ -173,12 +173,23 @@ export default function NannyShare() {
 
   return (
     <>
+    <div className="md:px-6 px-3  ">
       <Hero data={HeroData} />
+      <div className="flex flex-col md:gap-y-[100px] gap-y-[80px] md:pb-[60px] pb-[40px]  ">
+
       <TwoWay data={TwoWayData} list={TwoWayList} />
       <ProcessStep data={ProcessStepData} list={ProcessStepList} />
+      </div>
+      </div>
+      <div className="flex flex-col md:gap-y-[90px] gap-y-[70px] ">
+
       <Contract data={contractData} list={contractList} />
-      <Cta data={CtaData} />
+      <Cta data={CtaData} /> 
+      </div>
+      <div className="md:px-6 px-3 flex flex-col md:gap-y-[100px] gap-y-[80px] md:py-[60px] py-[40px]">
       <Find data={FindData} />
+      </div>
+      
     </>
   );
 }

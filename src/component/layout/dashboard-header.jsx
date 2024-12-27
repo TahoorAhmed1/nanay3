@@ -21,7 +21,9 @@ import Table from "@/component/common/table";
 import { CgClose } from "react-icons/cg";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import { BiLoader } from "react-icons/bi";
+import { BiLoader, BiUser } from "react-icons/bi";
+import { useNanny } from "../../zustand";
+import { FaUserCircle } from "react-icons/fa";
 
 const Requests = [
   { heading: "Sno", key: "Sno" },
@@ -70,16 +72,44 @@ export default function DashboardHeader({ children, onClickSearch }) {
       setToast({ ...toast, isVisible: false });
     }, 3000);
   };
-  const [imageUri, setImageUri] = useState();
-  // const [imageUri, setImageUri] = useState(
-  //   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAAMFBMVEXk5ueutLff4uOnrrHn6eqrsbTZ3N25vsHHy82zuLvr7e7c3+DV2NnQ09W8wcPMz9FRQ01gAAADeUlEQVR4nO2b23LjIAxAuYibMfj//3ZxkqZJmtggWyKzw3no9PGMEAJLRIjBYDAYDAaDwWAwGAwGg4EQACBUjFFd/vsGANScXbiS/Sy6awFYH7SRd4zWLqmuXmCdfDC6eRmZ+2kVJf1q9BOvTlog/N8o/WrJ1MEKbPistKIzv1PaNLoGKzI7LR+y6RnLuYTgt5fuHixGK0hVcbrEis1prlUqseJyEnVrd5Xi2oOuQUoaz5FWsLQ4lXrFUturk/yGo1eqrQa/mEQuZRuVVqjXrz1Qa6iorVozaoU4q1q33i1UxCezQzhR16qIcSpMlFIJs3qlgFKuH2SclFkI12/COZVjmVAKMAVhhbIoWGSkZFBkTi23uxfoMh1XOlcIyyfm4LtJ0d3V/zep+RulCCP1lYmOPPokZUkQ8xcWT9y9c4XymJmwUpQH8hRwTqRXT+z2I6wIAn1N0LTfWLgPh0x6RwePChTdIXORipj9F0idcPuPvkWFKOqaWEkgUp2hlwe2NatIz70bU1PLsywe5YfoHdWU6yaQ1qgfGlr7K0wDmqmho6BntkFItRVPF/3GzqzvHidOJ6GqtiBrnFYqVpDdaf8bsMsUGebNxDIu9pi3b43bjVw6GF2YbNbvtIz0PR9xgPLhOVzGyLD0fu8Cwi7ZaK2NWf+GvNjveBlULOycUppjcfwKo6I0PdI3TtenXDYtPjt3uc6E4HL2yxzV+ryrg9Gk5iJTsnzlMc9Lahnpsk8RJkYxEDF5qZ9k/paF4paXqFgiBlP0Tm76PBaskBO1VomRN2/r5YaYzpawlAKkN6/dKrRM8ESVAkqQ0C3PEi6Ce/H2Y7caLZlPfrdUjrjGTHqHdmdqQaq8k+9QonVWboEN2P7rXy1zToXA9ck+a7nj9QHiOSv3YHX4lQmkY3vuvZY/5uRPy6YnK3ekO4R8hrBvJfGJ1diJagJbss5O8ScM7rOQMk4riFgBtZM0zdmOHxfX09rzx0+LGzCuaQFx0452q7ZeEXLY2GzVkOwTQ0JdCfVSzUMFNPULCJnLqVBZF2BmC1T90BQ7UkdaVYUK0M80cFJ1WUV1X/lA1eRNsSqVD6+a2zH+5Q8St5/qE+rlwREqUh24naTc7zJgfi5wjP39x3JneZHa/b0Px+Xulf2iwHnu/bAnpYLmZ3f2rTqw5zQYDAaDwaAD/wANKir9WY4qAQAAAABJRU5ErkJggg=="
-  // );
 
   const [model, setModel] = useState({
-    // DateofBirth: JSON.parse(JSON.stringify(new Date())),
-    image: imageUri,
+    image: "",
+    firstName: "",
+    lastName: "",
+    serviceType: "",
+    experience: "",
+    isAIDcertificate: "",
+    isCPRcertificate: "",
+    isDrivingLicense: "",
+    doMealPrep: "",
+    careSpecialChild: "",
+    budget: "",
+    region: "",
+    zipCode: "",
   });
 
+  useEffect(() => {
+    if (userData) {
+      setModel({
+        image: userData.image || "",
+        firstName: userData.firstName || "",
+        lastName: userData.lastName || "",
+        serviceType: userData.serviceType || "",
+        experience: userData.experience || "",
+        isAIDcertificate: userData.isAIDcertificate ? "true" : "false",
+        isCPRcertificate: userData.isCPRcertificate ? "true" : "false",
+        isDrivingLicense: userData.isDrivingLicense ? "true" : "false",
+        doMealPrep: userData.doMealPrep ? "true" : "false",
+        careSpecialChild: userData.careSpecialChild ? "true" : "false",
+        budget: userData.budget || "",
+        region: userData.region || "",
+        zipCode: userData.zipCode || "",
+      });
+    }
+  }, [userData]);
+
+console.log('model', model,userData)
   const fillModel = (key, val) => {
     setModel((prevModel) => ({
       ...prevModel,
@@ -101,8 +131,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImageUri(reader.result);
-      console.log("imageUri", reader.result);
+      fillModel("image",reader.result);
     };
 
     reader.onerror = () => {
@@ -132,18 +161,6 @@ export default function DashboardHeader({ children, onClickSearch }) {
 
   const handleCloseModal = () => setModalOpen(false);
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (modalRef.current && !modalRef.current.contains(event.target)) {
-  //       setModalOpen(false);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -161,21 +178,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
     };
   }, []);
 
-  // Close dropdown if clicked outside
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //       setDropdownOpen(false);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
-
-  // Close dropdown if clicked outside
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -232,26 +235,27 @@ export default function DashboardHeader({ children, onClickSearch }) {
   const handleEdit = () => {
     setIsEdit(true);
   };
+  const {setIsOpen}=useNanny()
 
   const Request =
     userData?.role === "user"
       ? [
-          { heading: "Sno", key: "Sno" },
-          { heading: "Location", key: "region" },
-          { heading: "Children Count", key: "childrenCount" },
-          { heading: "Children Ages", key: "childrenAges" },
-          { heading: "Schedule", key: "schedule" },
-          { heading: "status", key: "status" },
-        ]
+        { heading: "Sno", key: "Sno" },
+        { heading: "Location", key: "region" },
+        { heading: "Children Count", key: "childrenCount" },
+        { heading: "Children Ages", key: "childrenAges" },
+        { heading: "Schedule", key: "schedule" },
+        { heading: "status", key: "status" },
+      ]
       : [
-          { heading: "Sno", key: "Sno" },
-          { heading: "Location", key: "region" },
-          { heading: "Children Count", key: "childrenCount" },
-          { heading: "Children Ages", key: "childrenAges" },
-          { heading: "Schedule", key: "schedule" },
-          { heading: "status", key: "status" },
-          { heading: "Detail", key: "detail" },
-        ];
+        { heading: "Sno", key: "Sno" },
+        { heading: "Location", key: "region" },
+        { heading: "Children Count", key: "childrenCount" },
+        { heading: "Children Ages", key: "childrenAges" },
+        { heading: "Schedule", key: "schedule" },
+        { heading: "status", key: "status" },
+        { heading: "Detail", key: "detail" },
+      ];
 
   const [isLoading, setLoading] = useState(false);
 
@@ -260,8 +264,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
     Put(
       "auth",
       {
-        userData,
-        image: imageUri,
+        ...model
       },
       userData?._id
     )
@@ -301,13 +304,12 @@ export default function DashboardHeader({ children, onClickSearch }) {
                 schedule: item.schedule,
                 status: (
                   <span
-                    className={`font-bold capitalize ${
-                      item.status === "approved"
+                    className={`font-bold capitalize ${item.status === "approved"
                         ? "text-sky-800"
                         : item.status === "pending"
-                        ? "text-green-800"
-                        : "text-red-800"
-                    }`}
+                          ? "text-green-800"
+                          : "text-red-800"
+                      }`}
                   >
                     {item.status}
                   </span>
@@ -337,7 +339,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
           setUserDatasource([]);
         }
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   const getUserData = () => {
@@ -345,11 +347,11 @@ export default function DashboardHeader({ children, onClickSearch }) {
     let id =
       userData?.role === "user"
         ? {
-            parentId: userData?._id,
-          }
+          parentId: userData?._id,
+        }
         : {
-            nannyId: userData?._id,
-          };
+          nannyId: userData?._id,
+        };
     Get(`/booking`, null, id)
       .then((res) => {
         if (res?.data) {
@@ -365,13 +367,12 @@ export default function DashboardHeader({ children, onClickSearch }) {
                 schedule: item.schedule,
                 status: (
                   <span
-                    className={`font-bold capitalize ${
-                      item.status === "approved"
+                    className={`font-bold capitalize ${item.status === "approved"
                         ? "text-sky-800"
                         : item.status === "pending"
-                        ? "text-green-800"
-                        : "text-red-800"
-                    }`}
+                          ? "text-green-800"
+                          : "text-red-800"
+                      }`}
                   >
                     {item.status}
                   </span>
@@ -452,8 +453,8 @@ export default function DashboardHeader({ children, onClickSearch }) {
 
   const handleSubModel = (id) => {
     getDataById(id);
-    setSubModalOpen(true);
     setSingleBookingId(id);
+    setSubModalOpen(true);
   };
 
   const approvedBooking = () => {
@@ -490,6 +491,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
         console.error(err);
       });
   };
+  console.log('userData', userData)
 
   return (
     <>
@@ -542,7 +544,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
               {userData.role !== "nanny" && (
                 <button
                   className="text-black mx-4 flex flex-col items-center text-center"
-                  onClick={handleRequestModal}
+                  onClick={()=>setIsOpen(true)}
                 >
                   <img
                     src={IconHeader3}
@@ -551,6 +553,15 @@ export default function DashboardHeader({ children, onClickSearch }) {
                     className="mb-1"
                   />
                   <span className="hidden sm:block">Request</span>
+                </button>
+              )}
+              {userData.role !== "nanny" && (
+                <button
+                  className="text-black mx-4 flex flex-col items-center text-center"
+                  onClick={()=>setIsOpen(false)}
+                >
+                 <BiUser className="w-[20px] h-[20px] mb-1" />
+                  <span className="hidden sm:block">Nanny</span>
                 </button>
               )}
               <button
@@ -631,7 +642,15 @@ export default function DashboardHeader({ children, onClickSearch }) {
               </button>
               <button
                 className="text-black flex flex-col items-center text-center"
-                onClick={handleRequestModal}
+                onClick={()=>setIsOpen(true)}
+              >
+                            <BiUser className="w-[20px] h-[20px] mb-1" />
+
+                <span className="text-xs">Nanny</span>
+              </button>
+              <button
+                className="text-black flex flex-col items-center text-center"
+                onClick={()=>setIsOpen(false)}
               >
                 <img
                   src={IconHeader3}
@@ -699,13 +718,13 @@ export default function DashboardHeader({ children, onClickSearch }) {
       {isModalOpen && (
         <div
           id="static-modal"
-          className="fixed top-0 right-0 left-0  flex justify-center items-center w-full h-full min-h-screen overflow-hidden bg-slate-50 bg-opacity-5 backdrop-blur-lg"
+          className="fixed top-0 right-0 left-0 back  inset-1 z-40 flex justify-center items-center w-full h-full min-h-screen overflow-scroll bg-slate-50 bg-opacity-5 backdrop-blur-lg"
         >
           <div
-            className="md:p-4 p-2 w-full md:max-w-[55%] max-w-[95%] max-h-full rounded-md"
+            className="md:p-4 p-2 w-full md:max-w-[70%] max-w-[95%] max-h-full rounded-md"
             ref={modalRef}
           >
-            <div className="bg-white md:px-8 px-4 rounded-md shadow-md border md:h-[600px]  py-2 z-0 flex flex-col justify-center relative">
+            <div className="bg-white md:px-8 px-4 rounded-md shadow-md border lg:h-[700px] sm:h-[850px]   py-2 z-0 flex flex-col justify-center relative">
               <div className="absolute top-6 right-6">
                 {isEdit ? (
                   <button>
@@ -741,7 +760,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
                       focus:outline-none "
                   >
                     <img
-                      src={imageUri || userData?.image || upload}
+                      src={model?.image}
                       alt="Uploaded Preview"
                       className="w-full h-full rounded-full object-cover"
                     />
@@ -753,105 +772,196 @@ export default function DashboardHeader({ children, onClickSearch }) {
                     // rounded-sm w-[95px] h-[30px] opacity-50 text-lime-950 font-semibold border-lime-950 border-2 my-2 text-md"
                     className="text-lg font-semibold text-teal-700 italic font-lato"
                   >
-                    Active--
+                    Active-- 
                   </span>
-                  <h4 className="text-md font-medium font-lato">
-                    <span>{userData?.firstName}</span>
+                  <h4 className="md:text-sm text-xs font-medium font-lato">
+                    <div className="capitalize">{userData?.role}</div>
+                    <span className="mr-1">{userData?.firstName}</span>
                     <span>{userData?.lastName}</span>
                   </h4>
-                  <h4 className="text-md font-medium font-lato">
+                  <h4 className="md:text-sm text-xs font-medium font-lato">
                     {userData?.email}
                   </h4>
                 </div>
               </div>
-              <div className="gap-4 grid lg:grid-cols-3 grid-cols-2 ">
-                <div>
-                  <span className="text-md font-medium font-lato">
-                    First Name
-                  </span>
-                  <InputField
-                    disabled={isEdit ? false : true}
-                    type="text"
-                    value={model.firstName}
-                    onChange={(e) => fillModel("firstName", e.target.value)}
-                    placeholder={userData?.firstName}
-                    inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] 
-                border-gray-200 border text-gray-900 text-sm  block
-                w-full focus:outline-none "
-                  />
-                </div>
-                <div>
-                  <span className="text-md font-medium font-lato pb-2">
-                    Last Name
-                  </span>
-                  <InputField
-                    disabled={isEdit ? false : true}
-                    type="text"
-                    value={model.lastName}
-                    onChange={(e) => fillModel("lastName", e.target.value)}
-                    placeholder={userData?.lastName}
-                    inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] 
-                border-gray-200 border text-gray-900 text-sm  block
-                w-full focus:outline-none "
-                  />
-                </div>
+              <div className="gap-4 grid lg:grid-cols-3 grid-cols-2">
+  <div>
+    <span className="md:text-sm text-xs font-medium font-lato">First Name</span>
+    <InputField
+      disabled={isEdit ? false : true}
+      type="text"
+      value={model.firstName}
+      onChange={(e) => fillModel("firstName", e.target.value)}
+      placeholder={userData?.firstName}
+      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    />
+  </div>
 
-                {/* Service Type */}
-                <div>
-                  <span className="text-md font-medium font-lato pb-2">
-                    Service Type
-                  </span>
-                  <select
-                    name="serviceType"
-                    disabled={isEdit ? false : true}
-                    value={userData?.serviceType || model.serviceType || ""}
-                    onChange={(e) => fillModel("serviceType", e.target.value)}
-                    className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-                  >
-                    <option value="">Select Service Type</option>
-                    <option value="part-time">Part Time</option>
-                    <option value="full-time">Full Time</option>
-                    <option value="occasional">Occasional</option>
-                  </select>
-                </div>
+  <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Last Name</span>
+    <InputField
+      disabled={isEdit ? false : true}
+      type="text"
+      value={model.lastName}
+      onChange={(e) => fillModel("lastName", e.target.value)}
+      placeholder={userData?.lastName}
+      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    />
+  </div>
 
-                {/* Region */}
-                <div>
-                  <span className="text-md font-medium font-lato pb-2">
-                    Region
-                  </span>
-                  <select
-                    name="region"
-                    disabled={isEdit ? false : true}
-                    value={userData?.region || model.region || ""}
-                    onChange={(e) => fillModel("region", e.target.value)}
-                    className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-                  >
-                    <option value="">Select Region</option>
-                    <option value="usa">USA</option>
-                    <option value="canada">Canada</option>
-                  </select>
-                </div>
+  <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Service Type</span>
+    <select
+      name="serviceType"
+      disabled={isEdit ? false : true}
+      value={model.serviceType || userData?.serviceType || ""}
+      onChange={(e) => fillModel("serviceType", e.target.value)}
+      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    >
+      <option value="">Select Service Type</option>
+      <option value="part-time">Part Time</option>
+      <option value="full-time">Full Time</option>
+      <option value="occasional">Occasional</option>
+    </select>
+  </div>
+{userData.role == "nanny" &&  
+  <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Experience</span>
+    <select
+      name="experience"
+      disabled={isEdit ? false : true}
+      value={model.experience || userData?.experience || ""}
+      onChange={(e) => fillModel("experience", e.target.value)}
+      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    >
+      <option value="">Select Experience</option>
+      <option value="toddlers">Toddlers (1-3 years)</option>
+      <option value="pre-school">Preschoolers (4-9 years)</option>
+      <option value="grade-school">Grade-schoolers (10-12 years)</option>
+      <option value="high-school">High-schoolers (13-17 years)</option>
+      <option value="adult">Adults (18+ years)</option>
+    </select>
+  </div>
+}
+ {userData.role == "nanny" &&   <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">First Aid Certified</span>
+    <select
+      name="isAIDcertificate"
+      disabled={isEdit ? false : true}
+      value={model.isAIDcertificate || userData?.isAIDcertificate || ""}
+      onChange={(e) => fillModel("isAIDcertificate", e.target.value)}
+      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    >
+      <option value="">Select</option>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  </div>}
 
-                <div>
-                  <span className="text-md font-medium font-lato pb-2">
-                    Zip Code
-                  </span>
-                  <InputField
-                    disabled={isEdit ? false : true}
-                    type="text"
-                    value={userData?.zipCode || model.zipCode || ""}
-                    onChange={(e) => fillModel("zipCode", e.target.value)}
-                    placeholder={userData?.zipCode}
-                    inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] 
-                border-gray-200 border text-gray-900 text-sm  block
-                w-full focus:outline-none "
-                  />
-                </div>
-              </div>
+{userData.role == "nanny" &&    <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">CPR Certified</span>
+    <select
+      name="isCPRcertificate"
+      disabled={isEdit ? false : true}
+      value={model.isCPRcertificate || userData?.isCPRcertificate || ""}
+      onChange={(e) => fillModel("isCPRcertificate", e.target.value)}
+      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    >
+      <option value="">Select</option>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  </div>
+}
+ {userData.role == "nanny" &&   <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Driving License</span>
+    <select
+      name="isDrivingLicense"
+      disabled={isEdit ? false : true}
+      value={model.isDrivingLicense || userData?.isDrivingLicense || ""}
+      onChange={(e) => fillModel("isDrivingLicense", e.target.value)}
+      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    >
+      <option value="">Select</option>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  </div>}
+
+{userData.role == "nanny" &&    <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Meal Prep</span>
+    <select
+      name="doMealPrep"
+      disabled={isEdit ? false : true}
+      value={model.doMealPrep || userData?.doMealPrep || ""}
+      onChange={(e) => fillModel("doMealPrep", e.target.value)}
+      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    >
+      <option value="">Select</option>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  </div>}
+
+ {userData.role == "nanny" &&   <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Work with Special Needs</span>
+    <select
+      name="careSpecialChild"
+      disabled={isEdit ? false : true}
+      value={model.careSpecialChild || userData?.careSpecialChild || ""}
+      onChange={(e) => fillModel("careSpecialChild", e.target.value)}
+      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    >
+      <option value="">Select</option>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  </div>}
+
+{userData.role == "nanny" &&   <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Hourly Rate (Budget)</span>
+    <InputField
+      disabled={isEdit ? false : true}
+      type="text"
+      value={model.budget || userData?.budget || ""}
+      onChange={(e) => fillModel("budget", e.target.value)}
+      placeholder={userData?.budget}
+      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    />
+  </div>}
+
+  {/* Region */}
+  <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Region</span>
+    <select
+      name="region"
+      disabled={isEdit ? false : true}
+      value={model.region || userData?.region || ""}
+      onChange={(e) => fillModel("region", e.target.value)}
+      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    >
+      <option value="">Select Region</option>
+      <option value="usa">USA</option>
+      <option value="canada">Canada</option>
+    </select>
+  </div>
+
+  <div>
+    <span className="md:text-sm text-xs font-medium font-lato mb-10">Zip Code</span>
+    <InputField
+      disabled={isEdit ? false : true}
+      type="text"
+      value={model.zipCode || userData?.zipCode || ""}
+      onChange={(e) => fillModel("zipCode", e.target.value)}
+      placeholder={userData?.zipCode}
+      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+    />
+  </div>
+</div>
+
               {userData?.role === "nanny" && (
                 <div>
-                  <span className="text-md font-medium font-lato pb-2">
+                  <span className="md:text-sm text-xs font-medium font-lato mb-10">
                     Describtion
                   </span>
                   <TextArea
@@ -874,7 +984,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
               )}
               {userData?.role === "user" && (
                 <div>
-                  <span className="text-md font-medium font-lato pb-2">
+                  <span className="md:text-sm text-xs font-medium font-lato mb-10">
                     Describtion
                   </span>
                   <TextArea
@@ -929,11 +1039,10 @@ export default function DashboardHeader({ children, onClickSearch }) {
               <div className="relative w-full h-full flex items-center">
                 <div
                   onClick={() => setSelected(true)}
-                  className={`${
-                    selected === true
+                  className={`${selected === true
                       ? "rounded-md bg-[#FF6F61] "
                       : " bg-transparent "
-                  } cursor-pointer w-full flex justify-center h-full text-white`}
+                    } cursor-pointer w-full flex justify-center h-full text-white`}
                 >
                   <button>Your Request</button>
                 </div>
@@ -1036,9 +1145,8 @@ export default function DashboardHeader({ children, onClickSearch }) {
                       Accept
                     </button>
                     <button
-                      className={`rounded-full px-4 py-1  text-white ${
-                        isReject ? "bg-gray-600/85" : "bg-red-600/85"
-                      }`}
+                      className={`rounded-full px-4 py-1  text-white ${isReject ? "bg-gray-600/85" : "bg-red-600/85"
+                        }`}
                       onClick={() => setIsReject(!isReject)}
                     >
                       {isReject ? "cancel" : "Reject"}

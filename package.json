@@ -25,7 +25,8 @@
     "redux-persist": "^6.0.0",
     "rimraf": "^6.0.1",
     "tw-elements-react": "^1.0.0-alpha-end",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^5.0.2"
   },
   "scripts": {
     "start": "craco start",

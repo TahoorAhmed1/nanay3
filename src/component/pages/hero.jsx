@@ -9,7 +9,7 @@ export default function Hero({ data }) {
     navigate("/auth/sign-in");
   };
   return (
-    <div className="py-[30px] ">
+    <div className="md:py-[60px] py-[40px] ">
       <div className="container mx-auto ">
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
           <div className="grid grid-cols-1 mb-4 capitalize">

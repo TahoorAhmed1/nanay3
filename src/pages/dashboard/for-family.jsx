@@ -39,6 +39,9 @@ import FormatLastSeen from "../../component/common/date-format";
 import { useSelector } from "react-redux";
 import { VscLoading } from "react-icons/vsc";
 import { Helmet } from "react-helmet-async";
+import { HiOutlineDotsVertical } from "react-icons/hi";
+import { BiLoader } from "react-icons/bi";
+import { useNanny } from "../../zustand";
 
 export default function ForFamily() {
   const userData = useSelector((state) => state.user);
@@ -329,13 +332,13 @@ export default function ForFamily() {
     if (!booking?.timing || !booking?.to) {
       return "Please select valid days and timings.";
     }
-  
+
     const getPeriodOfDay = (hours) => {
       if (hours >= 0 && hours < 12) return "Morning";
       if (hours >= 12 && hours < 18) return "Afternoon";
       return "Evening";
     };
-  
+
     const formatTime = (date) => {
       const hours = date.getHours();
       const minutes = date.getMinutes().toString().padStart(2, "0");
@@ -343,63 +346,115 @@ export default function ForFamily() {
       const formattedHours = hours % 12 || 12;
       return `${formattedHours}:${minutes} ${period}`;
     };
-  
+
     const formatDateWithDayAndMonth = (date) => {
       const day = date.toLocaleDateString("en-GB", { weekday: "long" });
       const numericDate = date.toLocaleDateString("en-GB"); // Format: DD/MM/YYYY
       return `${day}, ${numericDate}`;
     };
-  
+
     const startDate = new Date(booking.timing);
     const endDate = new Date(booking.to);
-  
+
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return "Invalid date or time format. Please check your input.";
     }
-  
+
     if (startDate > endDate) {
       return "The start time cannot be after the end time.";
     }
-  
+
     const startFormattedDate = formatDateWithDayAndMonth(startDate);
     const startPeriod = getPeriodOfDay(startDate.getHours());
     const startTime = formatTime(startDate);
-  
+
     const endFormattedDate = formatDateWithDayAndMonth(endDate);
     const endPeriod = getPeriodOfDay(endDate.getHours());
     const endTime = formatTime(endDate);
-  
+
     // Check if the start and end dates are the same
     if (startDate.toLocaleDateString() === endDate.toLocaleDateString()) {
       return `${startFormattedDate} ${startPeriod} (${startTime} - ${endTime})`;
     }
-  
+
     // Different dates
     return `${startFormattedDate} ${startPeriod} (${startTime}) to ${endFormattedDate} ${endPeriod} (${endTime})`;
   };
-  
+
   const handleTimingtoSelection = (e) => {
     const selectedTiming = e.target.value;
-    
+
     // Update the timing in booking
     setBooking({ ...booking, to: selectedTiming });
-    generateSchedule()
+    generateSchedule();
   };
-
- 
-  
-  
 
   // Use the generated schedule
   const schedule = generateSchedule();
 
   booking.schedule = schedule;
 
+  const { setIsOpen, isOpenTable } = useNanny();
+
+  const [allDatasource, setAllDatasource] = useState([]);
+
+  const getAllData = () => {
+    Get("/booking", null, { parentId: userData?._id })
+      .then((res) => {
+        if (res?.data) {
+          const bookingPromises2 = res.data.map((item, index) => {
+            return {
+              location: item.location,
+              childrenCount: item.childrenCount,
+              childrenAges: item.childrenAges.join(", "),
+              schedule: item.schedule,
+              createdAt:item?.createdAt,
+              status: (
+                <span
+                  className={`font-bold capitalize ${
+                    item.status === "approved"
+                      ? "text-sky-800"
+                      : item.status === "pending"
+                      ? "text-green-800"
+                      : "text-red-800"
+                  }`}
+                >
+                  {item.status}
+                </span>
+              ),
+
+    
+            };
+          }
+         
+  
+           
+           
+          );
+
+          Promise.all(bookingPromises2)
+            .then((userData) => {
+              setAllDatasource(userData);
+            })
+            .catch((err) => {
+              console.error("Error resolving booking details:", err);
+            });
+        } else {
+          console.log("No bookings data found.");
+        }
+      })
+      .catch((err) => {});
+  };
+
+  useEffect(() => {
+    getAllData();
+  }, []);
+
+  console.log("allDatasource", allDatasource);
   return (
     <>
       <Helmet>
         <title>For Family</title>
-     
       </Helmet>
       <DashboardHeader onClickSearch={toggleInput}>
         <div
@@ -419,56 +474,144 @@ export default function ForFamily() {
       </DashboardHeader>
       {filterList.length > 0 ? null : (
         <div className="md:px-6 px-3 flex flex-col  md:gap-y-[30px] gap-y-[20px]  py-[40px]">
-          <Alert />
+          {/* <Alert /> */}
           <Hero />
         </div>
       )}
-      <div className="md:px-6 px-3  md:mb-[50px] mb-[80px]">
-        <div className="mb-[30px]">
-          <Filter filterList={filterList.length > 0 ? filterList : listData} />
-        </div>
-        <div className="container mx-auto min-h-screen">
-          <div className="grid xl:grid-cols-3 sm:grid-cols-2 rounded-md md:gap-10 gap-6">
-            {filterList.length > 0
-              ? filterList.map((x, i) => (
-                  <List
-                    key={x._id}
-                    image={x.image || profile}
-                    firstName={x.firstName}
-                    email={x.email}
-                    budget={`${x?.budget} | 3 years experience`}
-                    getDataById={getDataById}
-                    modalData={modalData}
-                  >
-                    <button
-                      onClick={() => handleOpenModal(x._id)}
-                      className="mb-4 mt-2 underline decoration-black font-normal"
-                    >
-                      <H5>view profile</H5>
-                    </button>
-                  </List>
-                ))
-              : listData.map((x, i) => (
-                  <List
-                    key={x._id}
-                    image={x.image || profile}
-                    firstName={x.firstName}
-                    email={x.email}
-                    budget={`${x?.budget} | 3 years experience`}
-                    getDataById={getDataById}
-                    modalData={modalData}
-                  >
-                    <button
-                      onClick={() => handleOpenModal(x._id)}
-                      className="mb-4 mt-2 underline decoration-black font-normal"
-                    >
-                      <H5>view profile</H5>
-                    </button>
-                  </List>
-                ))}
+      <>
+        {isOpenTable ? (
+          <div className=" px-3 md:px-6">
+            <div className="bg-white container mx-auto  w-full mb-20 shadow-lg rounded-lg overflow-hidden ">
+              {allDatasource?.length == 0 ? (
+                <div className="flex w-full  min-h-[60vh] mx-auto justify-center items-center ">
+                  <BiLoader className="w-8 h-8 mx-auto animate-spin " />
+                </div>
+              ) : (
+                <div className="overflow-x-auto  w-full min-h-screen font-montserrat">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gradient-to-r bg-[#FF6F61] text-white">
+                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
+                          S.No
+                        </th>
+                    
+                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
+                          Location
+                        </th>
+                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
+                          Children Count
+                        </th>
+                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
+                          Children Ages
+                        </th>
+                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
+                          Schedule
+                        </th>
+                        <th className="py-4 px-6 text-left text-[13px] font-semibold uppercase w-[200px] ">
+                          Status
+                        </th>
+                     
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 min-h-screen w-full">
+                      {allDatasource
+                        ?.sort((a, b) => {
+                          return new Date(b.createdAt) - new Date(a.createdAt);
+                        })
+                        ?.map((item, index) => (
+                          <tr
+                            key={index}
+                            className={`${
+                              index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            } hover:bg-blue-50 transition-colors duration-200 font-medium w-full`}
+                          >
+                            <td className="py-4 px-6 text-sm w-[200px] text-gray-800">
+                              {index+1}
+                            </td>
+                       
+                            <td className="py-4 px-6 text-sm w-[200px] text-gray-700">
+                              {item.location || "N/A"}
+                            </td>
+                            <td className="py-4 px-6 text-sm w-[200px] text-gray-700">
+                              {item.childrenCount || "N/A"}
+                            </td>
+                            <td className="py-4 px-6 text-sm w-[200px] text-gray-700">
+                              {item.childrenAges || "N/A"}
+                            </td>
+                            <td className="py-4 px-6 text-sm w-[200px] text-gray-700 max-w-[200px]">
+                              {item.schedule || "N/A"}
+                            </td>
+                            <td className="py-4 px-6 text-sm w-[200px]">
+                              <span
+                                className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  item.status === "approved"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-blue-100 text-blue-800"
+                                } capitalize`}
+                              >
+                                {item.status}
+                              </span>
+                            </td>
+                         
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        ) : (
+          <div className="md:px-6 px-3  md:mb-[50px] mb-[80px]">
+            <div className="mb-[30px]">
+              <Filter
+                filterList={filterList.length > 0 ? filterList : listData}
+              />
+            </div>
+            <div className="container mx-auto min-h-screen">
+              <div className="grid xl:grid-cols-3 sm:grid-cols-2 rounded-md md:gap-10 gap-6">
+                {filterList.length > 0
+                  ? filterList.map((x, i) => (
+                      <List
+                        key={x._id}
+                        image={x.image || profile}
+                        firstName={x.firstName}
+                        email={x.email}
+                        budget={`${x?.budget} | 3 years experience`}
+                        getDataById={getDataById}
+                        modalData={modalData}
+                      >
+                        <button
+                          onClick={() => handleOpenModal(x._id)}
+                          className="mb-4 mt-2 underline decoration-black font-normal"
+                        >
+                          <H5>view profile</H5>
+                        </button>
+                      </List>
+                    ))
+                  : listData.map((x, i) => (
+                      <List
+                        key={x._id}
+                        image={x.image || profile}
+                        firstName={x.firstName}
+                        email={x.email}
+                        budget={`${x?.budget} | 3 years experience`}
+                        getDataById={getDataById}
+                        modalData={modalData}
+                      >
+                        <button
+                          onClick={() => handleOpenModal(x._id)}
+                          className="mb-4 mt-2 underline decoration-black font-normal"
+                        >
+                          <H5>view profile</H5>
+                        </button>
+                      </List>
+                    ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </>
       {/* <List data={listData} getDataById={getDataById} modalData={modalData} /> */}
       <ChatBot />
       <Toast
@@ -483,13 +626,13 @@ export default function ForFamily() {
           className="fixed top-0 right-0 left-0  flex justify-center items-center w-full h-full bg-black-50 bg-opacity-5 backdrop-blur-lg"
         >
           <div
-            className="p-4 w-full max-h-full rounded-md relative max-w-full md:max-w-[550px]"
+            className="p-4 w-full max-h-full rounded-md relative max-w-full md:max-w-[620px]"
             ref={modalRef}
           >
             <div className="bg-white p-4 rounded-md shadow-md border overflow-y-auto h-[90vh] md:h-auto md:max-h-[90vh] z-0 relative">
               <div className="flex flex-col items-center mb-2 text-center">
                 <div className="h-[95px] w-[95px] relative">
-                  <img src={profile} alt="Profile" />
+                  <img src={modalData.image || profile} alt="Profile" />
                   <div className="h-[30px] w-[30px] absolute top-[70%] left-[70%] z-10">
                     <img src={icon1} alt="Profile" />
                   </div>
@@ -629,36 +772,40 @@ export default function ForFamily() {
                 </>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <div className="flex items-center pt-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 ">
+                    <div className="flex items-center  pt-3">
                       <img src={icon2} className="h-[18px]" />
-                      <p className="ml-2 text-gray-600">
+                      <p className="ml-2 text-gray-600 text-[15px]">
                         <FormatLastSeen date={modalData?.lastSeen} />
                       </p>
                     </div>
-                    <div className="flex items-center pt-3">
+                    <div className="flex  w-full items-center pt-3 ">
                       <img src={icon3} className="h-[18px]" />
-                      <p className="ml-2 text-gray-600">
+                      <p className="ml-2 text-gray-600 text-[15px]">
                         Responds within a day
                       </p>
                     </div>
-                    <div className="flex items-center pt-3">
+                    <div className="flex items-center pt-3 ">
                       <img src={icon4} className="h-[18px]" />
-                      <p className="ml-2 text-gray-600">{modalData?.region}</p>
+                      <p className="ml-2 text-gray-600 text-[15px]">
+                        {modalData?.region}
+                      </p>
                     </div>
                     <div className="flex items-center pb-3">
                       <img src={icon23} className="h-[18px]" />
-                      <p className="ml-2 text-gray-600">{modalData?.budget}</p>
+                      <p className="ml-2 text-gray-600 text-[15px]">
+                        {modalData?.budget}
+                      </p>
                     </div>
                     <div className="flex items-center pb-3">
                       <img src={icon9} className="h-[18px]" />
-                      <p className="ml-2 text-gray-600">
+                      <p className="ml-2 text-gray-600 text-[15px]">
                         {modalData?.childAgeGroup}
                       </p>
                     </div>
                     <div className="flex items-center pb-3">
                       <img src={icon10} className="h-[18px]" />
-                      <p className="ml-2 text-gray-600">
+                      <p className="ml-2 text-gray-600 text-[15px]">
                         specail child:
                         <span>
                           {modalData?.careSpecialChild === true ? "yes" : "no"}
@@ -669,7 +816,7 @@ export default function ForFamily() {
                   <h3 className="text-lg font-bold ">
                     A little bit about us...
                   </h3>
-                  <p className="text-gray-800 my-2">
+                  <p className="text-gray-800 my-2 text-[16px]">
                     {modalData?.aboutYourself}
                   </p>
                   <h3 className="text-lg font-bold border-t pt-3">
@@ -681,11 +828,13 @@ export default function ForFamily() {
                   <div className="flex flex-wrap justify-between pe-3">
                     <div className="flex items-center">
                       <img src={icon5} className="h-[16px]" />
-                      <p className="text-gray-600 ml-1">Start: ASAP</p>
+                      <p className="text-gray-600 ml-1 text-[15px]">
+                        Start: ASAP
+                      </p>
                     </div>
                     <div className="flex items-center">
                       <img src={icon6} className="h-[16px]" />
-                      <p className="text-gray-600 ml-1">
+                      <p className="text-gray-600 ml-1 text-[15px]">
                         {modalData?.availability?.length > 0
                           ? modalData?.availability.join(", ")
                           : "any-time"}
@@ -693,13 +842,13 @@ export default function ForFamily() {
                     </div>
                     <div className="flex items-center">
                       <img src={icon7} className="h-[16px]" />
-                      <p className="text-gray-600 ml-1">
+                      <p className="text-gray-600 ml-1 text-[15px]">
                         {modalData?.isLiven === true ? "Live In" : "Live Out"}
                       </p>
                     </div>
                     <div className="flex items-center mt-2">
                       <img src={icon8} className="h-[16px]" />
-                      <p className="text-gray-600 ml-1">
+                      <p className="text-gray-600 ml-1 text-[15px]">
                         {modalData?.serviceType}
                       </p>
                     </div>
@@ -713,19 +862,25 @@ export default function ForFamily() {
                       {modalData?.isDrivingLicense && (
                         <div className="flex items-center ">
                           <img src={icon18} className="h-[22px]" />
-                          <p className="text-gray-600 ml-1">Driver’s License</p>
+                          <p className="text-gray-600 ml-1 text-[15px]">
+                            Driver’s License
+                          </p>
                         </div>
                       )}
                       {modalData?.isCPRcertificate && (
                         <div className="flex items-center md:ml-6 mt-2 md:mt-0">
                           <img src={icon16} className="h-[22px]" />
-                          <p className="text-gray-600 ml-1">CPR certificate</p>
+                          <p className="text-gray-600 ml-1 text-[15px]">
+                            CPR certificate
+                          </p>
                         </div>
                       )}
                       {modalData?.isAIDcertificate && (
                         <div className="flex items-center md:ml-6 mt-2 md:mt-0">
                           <img src={icon17} className="h-[22px]" />
-                          <p className="text-gray-600 ml-1">First Aid Kit</p>
+                          <p className="text-gray-600 ml-1 text-[15px]">
+                            First Aid Kit
+                          </p>
                         </div>
                       )}
                     </div>
@@ -737,7 +892,7 @@ export default function ForFamily() {
                     <div className="flex justify-start">
                       <div className="flex items-center ">
                         <img src={icon15} className="h-[22px]" />
-                        <p className="text-gray-600 ml-1 capitalize">
+                        <p className="text-gray-600 ml-1 text-[15px] capitalize">
                           {modalData?.Language}
                         </p>
                       </div>
@@ -747,7 +902,7 @@ export default function ForFamily() {
                   <div className="flex flex-col md:flex-row justify-start gap-4">
                     <div className="flex items-center ">
                       <img src={icon20} className="h-[22px]" />
-                      <p className="text-gray-600 ml-1">
+                      <p className="text-gray-600 ml-1 text-[15px]">
                         Do HouseKeeping:
                         <span>
                           {modalData?.doHouseKeeping === true ? "yes" : "no"}
@@ -756,7 +911,7 @@ export default function ForFamily() {
                     </div>
                     <div className="flex items-center ">
                       <img src={icon19} className="h-[22px]" />
-                      <p className="text-gray-600 ml-1">
+                      <p className="text-gray-600 ml-1 text-[15px]">
                         Do Meal Preparing:
                         <span>
                           {modalData?.doHouseKeeping === true ? "yes" : "no"}
@@ -770,7 +925,7 @@ export default function ForFamily() {
                   <div className="flex justify-start">
                     <div className="flex items-center ">
                       <img src={icon15} className="h-[22px]" />
-                      <p className="text-gray-600 ml-1 capitalize">
+                      <p className="text-gray-600 ml-1 text-[15px] capitalize">
                         {modalData?.experience}
                       </p>
                     </div>
