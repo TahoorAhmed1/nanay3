@@ -128,7 +128,7 @@ const ProcessList = [
 const MemberServiceData = {
   title: (
     <>
-      Complete <span className="text-[#FF6F61] md:font-extrabold font-bold md:font-extrabold font-bold ">your nanny</span> search
+      Complete <span className="text-[#FF6F61] md:font-extrabold font-bold ">your nanny</span> search
       with <br className="hidden xl:block" /> these additional services
     </>
   ),

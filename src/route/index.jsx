@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import ForFamily from "@/pages/for-family.jsx";
 import ForNannies from "@/pages/for-nannies";
