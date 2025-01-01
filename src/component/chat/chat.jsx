@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 import { Get } from "../../config/api-method";
 import { useSelector } from "react-redux";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://nany-backend.vercel.app");
 
 export default function Chat() {
   const user = useSelector((state) => state.user);
