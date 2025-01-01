@@ -532,7 +532,7 @@ console.log('model', model,userData)
                 <span className="hidden sm:block">Search</span>
               </button>
               {children}
-              <button className="text-black mx-4 flex flex-col items-center text-center">
+              <Link to={"/dashboard/chat"} className="text-black mx-4 flex flex-col items-center text-center">
                 <img
                   src={IconHeader2}
                   width="20px"
@@ -540,7 +540,7 @@ console.log('model', model,userData)
                   className="mb-1"
                 />
                 <span className="hidden sm:block">Conversations</span>
-              </button>
+              </Link>
               {userData.role !== "nanny" && (
                 <button
                   className="text-black mx-4 flex flex-col items-center text-center"
