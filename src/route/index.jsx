@@ -29,7 +29,7 @@ export default function AppRoutes() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<ForFamily />} />
+        <Route path="/" element={ <ForFamily />} />
         <Route path="/for-nannies" element={<ForNannies />} />
         <Route path="/nanny-share" element={<NannyShare />} />
         <Route path="/service/nanny-payroll" element={<NannyPayroll />} />
@@ -60,7 +60,7 @@ export default function AppRoutes() {
         <Route path="/*" element={<NotFound />} />
         <Route
           path="admin-dashboard/*"
-          element={ isAdmin && <AdminDashboard />}
+          element={ isAdmin == "admin" && <AdminDashboard />}
         />
       </Routes>
     </>

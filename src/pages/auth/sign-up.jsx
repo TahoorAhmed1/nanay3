@@ -17,7 +17,7 @@ import { BackArrow } from "@/config/app-constant";
 import icon from "@/assets/common-icon/google-icon.png";
 import TextArea from "@/component/common/textarea";
 import { storeData } from "@/config/helper";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { add } from "@/redux/reducers/userSlice";
 import personImg from "../../assets/auth/image.jpg";
 import { Close } from "@/config/app-constant";
@@ -271,6 +271,22 @@ export default function AuthSignUp() {
   const modalRef = useRef(null);
   const [otpData, setOtpData] = useState({});
   const [timer, setTimer] = useState(600); // 2 minutes
+
+
+  const role = useSelector((state) => state?.user?.role);
+
+  useEffect(()=>{
+    const token = localStorage.getItem("token");
+    if(token && role== "user"){
+      navigate("/dashboard/for-family")
+    }else if(token && role== "nanny"){
+      navigate("/dashboard/for-nanny")
+  
+    }else if( token && role== "admin"){
+      navigate("/admin-dashboard/")
+  
+    }
+  },[])
 
   const showToast = (message, type) => {
     setToast({ isVisible: true, message, type });

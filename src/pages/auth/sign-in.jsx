@@ -9,7 +9,7 @@ import { Post } from "@/config/api-method";
 import { BackArrow } from "@/config/app-constant";
 import line from "@/assets/auth/horizental.png";
 import { storeData } from "@/config/helper";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { add } from "@/redux/reducers/userSlice";
 import OTPInput from "@/component/common/otpField";
 import { VscLoading } from "react-icons/vsc";
@@ -29,6 +29,20 @@ export default function AuthSignIn() {
     message: "",
     type: "",
   });
+  const role = useSelector((state) => state?.user?.role);
+  useEffect(()=>{
+    const token = localStorage.getItem("token");
+    console.log(token,'role', role, "token")
+  if(token && role== "user"){
+    navigate("/dashboard/for-family")
+  }else if(token && role== "nanny"){
+    navigate("/dashboard/for-nanny")
+
+  }else if( token && role== "admin"){
+    navigate("/admin-dashboard/")
+
+  }
+},[])
 
   const fillModel = (key, val) => {
     setModel((prevModel) => ({
