@@ -177,7 +177,7 @@ export default function Chat() {
   
   
   const startChat = async (id, participantId) => {
-    const { data: chat } = await axios.post('http://localhost:5000/chat/create', {
+    const { data: chat } = await axios.post('https://nany-backend.vercel.app/chat/create', {
       participants: [user?._id, participantId],
     });
     setCurrentChat(chat);
@@ -200,7 +200,7 @@ export default function Chat() {
   
 
   return (
-    <main className="flex min-h-[80vh]  items-center justify-center bg-white container md:px-6 px-3 md:py-20 py-10">
+    <main className="flex min-h-[80vh]  items-center justify-center bg-white mx-auto container md:px-6 px-3 md:py-20 py-10">
       <div className="w-full h-full border  rounded-lg shadow-md overflow-hidden">
         <div className="flex">
           <UserList

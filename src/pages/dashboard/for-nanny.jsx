@@ -48,6 +48,7 @@ export default function ForNanny() {
     type: "",
   });
   const userData = useSelector((state) => state.user);
+  
 useEffect(()=>{
   const token = localStorage.getItem("token");
   if(token !== "" && userData.role =="user"){
@@ -59,7 +60,7 @@ useEffect(()=>{
     navigate("/admin-dashboard/")
 
   }
-  else if(token == ""){
+  else if(token !== ""){
     navigate("/auth/sign-in")
   }
 },[])

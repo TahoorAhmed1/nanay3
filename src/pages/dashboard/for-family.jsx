@@ -89,8 +89,10 @@ useEffect(()=>{
     navigate("/admin-dashboard/")
 
   }
-  else if(token == ""){
+  else if(token !== ""){
     navigate("/auth/sign-in")
+  }else{
+    
   }
 },[])
 
