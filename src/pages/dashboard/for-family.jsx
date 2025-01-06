@@ -6,7 +6,7 @@ import Filter from "@/component/dashboard/filter";
 import List from "@/component/dashboard/list";
 import ChatBot from "@/component/dashboard/chat-bot";
 import { Get } from "@/config/api-method";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Close } from "@/config/app-constant";
 import { Post } from "@/config/api-method";
 import Toast from "@/component/common/toast";
@@ -628,12 +628,20 @@ useEffect(()=>{
                         getDataById={getDataById}
                         modalData={modalData}
                       >
+                       {userData?.selectPackage ?
                         <button
                           onClick={() => handleOpenModal(x._id)}
                           className="mb-4 mt-2 underline decoration-black font-normal"
                         >
                           <H5>view profile</H5>
                         </button>
+                        :<Link
+                        to={"/package"}
+                        className="mb-4 mt-2 underline decoration-black font-normal"
+                      >
+                        <H5>view profile</H5>
+                      </Link>
+                        }
                       </List>
                     ))
                   : listData.map((x, i) => (
@@ -646,12 +654,22 @@ useEffect(()=>{
                         getDataById={getDataById}
                         modalData={modalData}
                       >
+                    
+
+                        {userData?.selectPackage ?
                         <button
-                          onClick={() => handleOpenModal(x._id)}
+                        onClick={() => handleOpenModal(x._id)}
+
                           className="mb-4 mt-2 underline decoration-black font-normal"
                         >
                           <H5>view profile</H5>
                         </button>
+                        :<Link
+                        to={"/package"}
+                        className="mb-4 mt-2 underline decoration-black font-normal"
+                      >
+                        <H5>view profile</H5>
+                      </Link>}
                       </List>
                     ))}
               </div>

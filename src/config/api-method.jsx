@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // let baseApi = 'https://salmon-betta-shoe.cyclic.app/';
-let baseApi = "https://nany-backend.vercel.app/";
+let baseApi = " http://localhost:5000/";
 
 let api = axios.create({
   baseURL: baseApi,
