@@ -29,16 +29,22 @@ export default function AuthSignIn() {
     message: "",
     type: "",
   });
-  const role = useSelector((state) => state?.user?.role);
+  const user = useSelector((state) => state?.user);
   useEffect(()=>{
     const token = localStorage.getItem("token");
-    console.log(token,'role', role, "token")
-  if(token && role== "user"){
+  if(token && user?.role== "user"){
+    if(!user?.selectPackage){
+      navigate("/packages")
+    }
     navigate("/dashboard/for-family")
-  }else if(token && role== "nanny"){
+
+  }else if(token && user?.role== "nanny"){
+    if(!user?.selectPackage){
+      navigate("/packages")
+    }
     navigate("/dashboard/for-nanny")
 
-  }else if( token && role== "admin"){
+  }else if( token && user?.role== "admin"){
     navigate("/admin-dashboard/")
 
   }

@@ -507,13 +507,13 @@ console.log('model', model,userData)
             >
               <ul className="flex flex-col font-medium lg:flex-row lg:space-x-8 lg:mt-0">
                 {userData.role === "nanny" ? (
-                  <li className="underline-animation">
+                  <Link to="/dashboard/for-family" className="underline-animation">
                     <Font1> Nannies</Font1>
-                  </li>
+                  </Link>
                 ) : (
-                  <li className="underline-animation">
+                  <Link to="/dashboard/for-nanny" className="underline-animation">
                     <Font1>Families </Font1>
-                  </li>
+                  </Link>
                 )}
               </ul>
             </div>
@@ -613,7 +613,7 @@ console.log('model', model,userData)
               </button>
             </div>
 
-            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex items-center justify-around py-2">
+            <div className="md:hidden z-20 fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex items-center justify-around py-2">
               {children}
 
               <button

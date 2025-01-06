@@ -1,16 +1,115 @@
 import React from "react";
 import AuthBg from "@/assets/auth/auth-bg.png";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-export default function Packages() {
+ function Packages() {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user);
+
   return (
     <div
       className="py-[30px] md:py-[50px] lg:py-[100px] h-[100dvh]"
       style={{ background: `url(${AuthBg}) 100% 100% / cover no-repeat` }}
     >
-      <div className="container mx-auto">
-        <div className="sm:grid sm:grid-cols-3 sm:gap-6 xl:grid-cols-3 xl:gap-20">
+      <div className="container px-2 mx-auto">
+        <div className={`grid lg:grid-cols-2 lg:gap-4 ${ user?.role== "user" ? "2xl:grid-cols-4" : "2xl:grid-cols-3" } 2xl:gap-6`}>
+       {user?.role == "user" &&   <div
+            className="rounded-lg shadow-lg divide-y-2 divide-slate-200 bg-white hover:border-red-700 border"
+            onClick={() => navigate("/dashboard/for-family")}
+          >
+            <div className="p-6">
+              <h2 className="text-2xl leading-6 font-bold text-slate-900">
+                1. Free Membership
+              </h2>
+              <p className="pt-[20px] relative">
+                <span className="text-4xl font-bold text-slate-900 tracking-tighter">
+                  $0
+                </span>
+
+                <span className="text-sm font-medium text-slate-500">
+                  /month or $0/year
+                </span>
+
+                {/* <span className="text-lg font-bold text-red-400 tracking-tighter absolute right-0 top-0 ">
+                  $20
+                </span> */}
+              </p>
+              <h2 className="text-lg leading-6 font-bold text-slate-900 pt-4">
+                Feature:
+              </h2>
+            </div>
+            <div className="pt-8 pb-12 px-6">
+              <ul role="list" className="mt-4 space-y-3">
+       
+                <li className="flex space-x-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="flex-shrink-0 h-5 w-5 text-red-400"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M5 12l5 5l10 -10"></path>
+                  </svg>
+                  <span className="text-md text-slate-700">
+                    Priority email support with response within 24 hours.
+                  </span>
+                </li>
+                <li className="flex space-x-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="flex-shrink-0 h-5 w-5 text-red-400"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M5 12l5 5l10 -10"></path>
+                  </svg>
+                  <span className="text-md text-slate-700">
+                    Access to premium content, including interview guides and
+                    detailed background check reports.
+                  </span>
+                </li>
+                <li className="flex space-x-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="flex-shrink-0 h-5 w-5 text-red-400"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M5 12l5 5l10 -10"></path>
+                  </svg>
+                  <span className="text-md text-slate-700">
+                    Profile visibility for nannies (nannies can see which
+                    parents have viewed their profiles).
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>}
           <div
             className="rounded-lg shadow-lg divide-y-2 divide-slate-200 bg-white hover:border-red-700 border"
             onClick={() => navigate("/payment-gateway")}
@@ -561,3 +660,5 @@ export default function Packages() {
     </div>
   );
 }
+
+export default Packages

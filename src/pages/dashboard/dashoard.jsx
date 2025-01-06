@@ -3,14 +3,14 @@ import Forfamily from "@/pages/dashboard/for-family";
 import ForNanny from "@/pages/dashboard/for-nanny";
 import NotFound from "@/pages/not-found";
 import ChatMain from "./Chat";
-import { useSelector } from "react-redux";
+import withUserDetails from "../../middleware/userAuth";
 
-export default function Dashboard() {
-  const user = useSelector((state) => state?.user);
+ function Dashboard({data}) {
+  let user=data
   return (
     <div className="m-0 p-0">
       <Routes path="">
-        <Route path="chat" element={  <ChatMain user={user} />} />
+        <Route path="chat" element={<ChatMain user={user} />} />
         <Route path="for-family" element={ <Forfamily user={user} />} />
         <Route path="for-nanny" element={ <ForNanny  user={user} />} />
         <Route path="*" element={<NotFound />} />
@@ -18,3 +18,6 @@ export default function Dashboard() {
     </div>
   );
 }
+
+ 
+export default withUserDetails(Dashboard)
