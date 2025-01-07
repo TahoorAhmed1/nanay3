@@ -57,37 +57,23 @@ let Post = (apiName, body) => {
       .catch((err) => reject(err));
   });
 };
+
 let Put = async (apiName, body, id) => {
   const token = await AsyncStorage.getItem("bussAppToken");
   if (token !== null) {
-    // value previously stored
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
   return await api.put(`${apiName}/${id}`, body);
 };
-// let Delete = async (apiName, id) => {
-//   const token = await AsyncStorage.getItem("bussAppToken");
-//   if (token !== null) {
-//     // value previously stored
-//     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-//   }
-//   return await api.delete(`${apiName}/${id}`);
-// };
+
 
 let Delete = async (apiName) => {
-  // Remove id from parameter list
   const token = await AsyncStorage.getItem("bussAppToken");
   if (token !== null) {
     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
-  return await api.delete(apiName); // No extra id appended
+  return await api.delete(apiName); 
 };
-// const saveToken = async (token) => {
-//   try {
-//     await AsyncStorage.setItem("bussAppToken", token);
-//   } catch (e) {
-//     console.error("Failed to save token:", e);
-//   }
-// };
+
 
 export { Get, userGet, Post, Delete, Put };

@@ -10,6 +10,8 @@ import Users from "./user";
 import Bookings from "./booking";
 import { removeData } from "@/config/helper";
 import { useState } from "react";
+import Packages from "./packages";
+import { Package } from "lucide-react";
 
 const pagesArr = [
   {
@@ -23,6 +25,10 @@ const pagesArr = [
   {
     icon: <BsBroadcastPin className="md:w-[34px] md:h-[34px] w-[25px] h-[25px]" color="#999999" />,
     route: "bookings",
+  },
+  {
+    icon: <Package className="md:w-[34px] md:h-[34px] w-[25px] h-[25px]" color="#999999" />,
+    route: "packages",
   },
 ];
 
@@ -81,9 +87,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-grow bg-white relative overflow-auto">
-        {/* Mobile Menu Button */}
         <button
           className="md:hidden  z-30 bg-gray-200 p-2 m-3 rounded-md shadow-md"
           onClick={toggleSidebar}
@@ -94,6 +98,7 @@ export default function AdminDashboard() {
         <Routes>
           <Route path="" element={<AdminDashboardMain />} />
           <Route path="bookings" element={<Bookings />} />
+          <Route path="packages" element={<Packages />} />
           <Route path="users" element={<Users />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

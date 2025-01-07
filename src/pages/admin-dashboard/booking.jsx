@@ -55,12 +55,9 @@ export default function Bookings() {
     childrenAges: [],
     budget: "",
     status: "pending",
-    schedule: "", // Single string that will contain combined days and timing, like "Monday Wednesday Friday Evening (4 PM - 8 PM)"
-    timing: "", // Timing selected from dropdown
+    schedule: "",
+    timing: "",
     selectedDays: [],
-    // budget: userData?.budget,
-    // startTime: null,
-    // endTime: null,
   });
 
   const fillModel = (key, val) => {
@@ -69,12 +66,7 @@ export default function Bookings() {
       [key]: val,
     }));
   };
-  // const fillBookingModel = (key, val) => {
-  //   setBooking({ ...booking, [key]: val });
 
-  // };
-
-  // Fetch all booking data
   const getAllData = () => {
     Get("/booking/All")
       .then((res) => {
@@ -137,15 +129,14 @@ export default function Bookings() {
   };
 
   const getDataById = (id) => {
-    // First, fetch the booking data
     Get(`/booking/${id}`)
       .then((res) => {
         if (res?.data) {
-          const booking = res?.data; // Save the booking data
-          // Now, fetch the user data using the userId from the booking
+          const booking = res?.data;
+
           Get(`/auth/${booking.parentId}`)
             .then((userRes) => {
-              const user = userRes?.data || {}; // Handle user data
+              const user = userRes?.data || {};
 
               setSingleBooking({
                 id: user._id,
@@ -189,15 +180,13 @@ export default function Bookings() {
     setModalOpen(true);
   };
 
-  console.log(singleBooking);
-
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
   };
 
   const handleStatusChange = (e) => {
     const status = e.target.value;
-    setSelectedStatus(status); // Update selected status
+    setSelectedStatus(status); 
   };
 
   const approvedBooking = () => {
@@ -245,7 +234,6 @@ export default function Bookings() {
       })
       .catch((err) => {
         console.error(err);
-        // showToast("Signup failed. Please try again.", "error");
       });
   };
 
@@ -265,18 +253,14 @@ export default function Bookings() {
     setBooking({ ...booking, childrenAges: newAges });
   };
 
-  // Handle day selection
   const handleDaySelection = (day) => {
-    // Check if the timing is selected
     if (!booking.timing) {
       alert("Please select a timing first.");
       return;
     }
 
-    // Toggle day selection
     let updatedDays = [...booking.selectedDays];
     if (updatedDays.includes(day)) {
-      // Remove the day if it's already selected
       updatedDays = updatedDays.filter((item) => item !== day);
     } else {
       updatedDays.push(day);
@@ -290,40 +274,29 @@ export default function Bookings() {
 
   const handleTimingSelection = (e) => {
     const selectedTiming = e.target.value;
-
-    // Update the timing in booking
     setBooking({ ...booking, timing: selectedTiming });
   };
 
-  // Generate the schedule string
   const generateSchedule = () => {
     if (booking.selectedDays.length === 0 || !booking.timing) {
       return "";
     }
-
-    // Create the schedule string: "Monday Wednesday Friday Evening (4 PM - 8 PM)"
     return `${booking.selectedDays.join(" ")} ${booking.timing}`;
   };
-
-  // Use the generated schedule
   const schedule = generateSchedule();
-
   booking.schedule = schedule;
-
   const handleSelectParent = (e) => {
     setBooking((prevBooking) => ({
       ...prevBooking,
       parentId: e.target.value,
     }));
   };
-
   const handleSelectNanny = (e) => {
     setBooking((prevBooking) => ({
       ...prevBooking,
       nannyId: e.target.value,
     }));
   };
-
   useEffect(() => {
     setBooking((prevBooking) => ({
       ...prevBooking,
@@ -423,7 +396,6 @@ export default function Bookings() {
     getSelectNanny();
   }, []);
 
-
   return (
     <section className="px-4">
       <div className="flex gap-4 justify-between py-2">
@@ -459,9 +431,9 @@ export default function Bookings() {
         <Table
           tableClass="overflow-y-scroll max-h-[800px] border w-full"
           tableHeaderClass="bg-sky-700 w-full text-white sticky top-0 capitalize font-montserrat"
-          datasource={(filterList.length > 0 ? filterList : allDatasource).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))}
-
-
+          datasource={(filterList.length > 0 ? filterList : allDatasource).sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          )}
           cols={AllRequestCol}
           loading={loading}
           loaderColor="text-sky-700"

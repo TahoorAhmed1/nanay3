@@ -32,6 +32,7 @@ import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { BiLoader } from "react-icons/bi";
 import { Helmet } from "react-helmet-async";
+import { useChat } from "../../zustand/chat";
 
 export default function ForNanny() {
   const navigate = useNavigate();
@@ -48,22 +49,19 @@ export default function ForNanny() {
     type: "",
   });
   const userData = useSelector((state) => state.user);
-  
-useEffect(()=>{
-  const token = localStorage.getItem("token");
-  if(token !== "" && userData.role =="user"){
-    navigate("/dashboard/for-family")
-  }else if(token && userData?.role== "nanny"){
-    navigate("/dashboard/for-nanny")
 
-  }else if( token && userData?.role== "admin"){
-    navigate("/admin-dashboard/")
-
-  }
-  else if(token !== ""){
-    navigate("/auth/sign-in")
-  }
-},[])
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token !== "" && userData.role == "user") {
+      navigate("/dashboard/for-family");
+    } else if (token && userData?.role == "nanny") {
+      navigate("/dashboard/for-nanny");
+    } else if (token && userData?.role == "admin") {
+      navigate("/admin-dashboard/");
+    } else if (token !== "") {
+      navigate("/auth/sign-in");
+    }
+  }, []);
 
   const [model, setModel] = useState({});
   const [isReject, setIsReject] = useState(false);
@@ -78,7 +76,6 @@ useEffect(()=>{
   const showToast = (message, type) => {
     setToast({ isVisible: true, message, type });
 
-    // Auto-hide after 3 seconds
     setTimeout(() => {
       setToast({ ...toast, isVisible: false });
     }, 3000);
@@ -127,24 +124,9 @@ useEffect(()=>{
       });
   };
 
-  const getDataById = (id) => {
-    Get(`/auth/${id}`)
-      .then((res) => {
-        setModalData(res?.data);
-      })
-      .catch((err) => {
-        console.error("Error fetching user data:", err);
-      });
-  };
-
   useEffect(() => {
     getData();
   }, []);
-
-  useEffect(() => {
-    // This effect will run when the component mounts and whenever the location changes
-    console.log("filterList updated:", filterList);
-  }, [filterList, location]); // Include location in the dependency array
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -219,7 +201,6 @@ useEffect(()=>{
     const query = e.target.value.toLowerCase();
 
     if (!query) {
-      // If the input is empty, clear the filterList to show banner and filter
       setFilterList([]);
       return;
     }
@@ -232,11 +213,6 @@ useEffect(()=>{
 
     setFilterList(filtered);
   };
-
-  // const handleOpenModal = (id) => {
-  //   getDataById(id);
-  //   setModalOpen(true);
-  // };
 
   const handleCloseModal = () => setModalOpen(false);
 
@@ -253,6 +229,7 @@ useEffect(()=>{
     };
   }, []);
   const [allDatasource, setAllDatasource] = useState([]);
+  const {setChat}=useChat()
   const handleSubModel = (id) => {
     setSingleBookingId(id);
     getDataByIdPro(id);
@@ -294,16 +271,30 @@ useEffect(()=>{
                   </button>
                 ),
                 firstName: user.firstName + " " + user.lastName,
+                user: user,
                 email: user.email,
                 region: user.region,
+                ...item
               };
             })
           );
 
-          // Resolve all booking promises
           Promise.all(bookingPromises2)
             .then((userData) => {
               setAllDatasource(userData);
+ 
+              console.log(userData,"asdasfS");
+              
+              let user = userData.filter(
+                ({ rawStatus }) => rawStatus === "approved"
+              );
+
+              let uniqueUsers = [
+                ...new Map(
+                  user?.map((item) => [item?.user?._id, item])
+                ).values(),
+              ];
+              setChat(uniqueUsers)
             })
             .catch((err) => {
               console.error("Error resolving booking details:", err);
@@ -320,12 +311,10 @@ useEffect(()=>{
   }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10; // Change this to adjust the number of rows per page
+  const rowsPerPage = 10;
 
-  // Calculate total pages
   const totalPages = Math.ceil(allDatasource.length / rowsPerPage);
 
-  // Get the data for the current page
   const paginatedData = allDatasource
     ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     ?.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
@@ -369,63 +358,61 @@ useEffect(()=>{
         </div>
       )}
       <div className=" px-3 md:px-6">
-      <div className=" container mx-auto  w-full mb-20 rounded-lg overflow-hidden ">
-      {allDatasource.length == 0 ? (
+        <div className=" container mx-auto  w-full mb-20 rounded-lg overflow-hidden ">
+          {allDatasource.length == 0 ? (
             <div className="flex w-full  min-h-[60vh] mx-auto justify-center items-center ">
               <BiLoader className="w-8 h-8 mx-auto animate-spin " />
             </div>
           ) : (
-
             <>
-            <div className="overflow-x-auto  font-montserrat">
-             <table className="w-full shadow-lg rounded-lg overflow-scroll">
-             <thead>
-                <tr className="bg-gradient-to-r from-[#FF6F61] to-[#FF9473] text-white">
-                <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      S.No
-                    </th>
-                    <th className="py-4 px-6  text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Full Name
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Budget
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Children Count
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Children Ages
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Schedule
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Region
-                    </th>
-                    <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
+              <div className="overflow-x-auto  font-montserrat">
+                <table className="w-full shadow-lg rounded-lg overflow-scroll">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-[#FF6F61] to-[#FF9473] text-white">
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        S.No
+                      </th>
+                      <th className="py-4 px-6  text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Full Name
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Budget
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Location
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Children Count
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Children Ages
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Schedule
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Region
+                      </th>
+                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
 
-                <tbody className="divide-y divide-gray-200 ">
-                  {paginatedData                 
-                    ?.map((item, index) => (
+                  <tbody className="divide-y divide-gray-200 ">
+                    {paginatedData?.map((item, index) => (
                       <tr
-                     key={index}
-                     className={`${
-                       index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                     } hover:bg-[#FFEBE9] transition-colors duration-200`}
-                   >
+                        key={index}
+                        className={`${
+                          index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                        } hover:bg-[#FFEBE9] transition-colors duration-200`}
+                      >
                         <td className="py-4 px-6 text-sm w-full text-gray-800">
                           {index + 1}
                         </td>
@@ -469,31 +456,30 @@ useEffect(()=>{
                         </td>
                       </tr>
                     ))}
-                </tbody>
-              </table>
-            </div>
+                  </tbody>
+                </table>
+              </div>
               <div className="flex items-center justify-center my-6 space-x-4">
-               <button
-                 onClick={handlePrevious}
-                 disabled={currentPage === 1}
-                 className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-               >
-                 Previous
-               </button>
-               <span className="text-gray-700 font-medium">
-                 Page <span className="font-bold">{currentPage}</span> of{" "}
-                 <span className="font-bold">{totalPages}</span>
-               </span>
-               <button
-                 onClick={handleNext}
-                 disabled={currentPage === totalPages}
-                 className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-               >
-                 Next
-               </button>
-             </div>
+                <button
+                  onClick={handlePrevious}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  Previous
+                </button>
+                <span className="text-gray-700 font-medium">
+                  Page <span className="font-bold">{currentPage}</span> of{" "}
+                  <span className="font-bold">{totalPages}</span>
+                </span>
+                <button
+                  onClick={handleNext}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  Next
+                </button>
+              </div>
             </>
-
           )}
         </div>
       </div>

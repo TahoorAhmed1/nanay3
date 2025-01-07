@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import DashboardHeader from "@/component/layout/dashboard-header";
-import Alert from "@/component/dashboard/alert";
 import Hero from "@/component/dashboard/hero";
 import Filter from "@/component/dashboard/filter";
 import List from "@/component/dashboard/list";
@@ -20,33 +19,27 @@ import icon7 from "@/assets/dashboard/model-icon/7.png";
 import icon8 from "@/assets/dashboard/model-icon/8.png";
 import icon9 from "@/assets/dashboard/model-icon/9.png";
 import icon10 from "@/assets/dashboard/model-icon/10.png";
-import icon11 from "@/assets/dashboard/model-icon/11.png";
-import icon12 from "@/assets/dashboard/model-icon/12.png";
-import icon13 from "@/assets/dashboard/model-icon/13.png";
 import icon15 from "@/assets/dashboard/model-icon/15.png";
 import icon16 from "@/assets/dashboard/model-icon/16.png";
 import icon17 from "@/assets/dashboard/model-icon/17.png";
 import icon18 from "@/assets/dashboard/model-icon/18.png";
 import icon19 from "@/assets/dashboard/model-icon/19.png";
 import icon20 from "@/assets/dashboard/model-icon/20.png";
-import icon21 from "@/assets/dashboard/model-icon/21.png";
-import icon22 from "@/assets/dashboard/model-icon/22.png";
 import icon23 from "@/assets/dashboard/model-icon/23.png";
 import TextArea from "@/component/common/textarea";
 import profile from "@/assets/dashboard/list/profile.png";
-import { H1, H5, Font2 } from "@/config/typography";
+import { H5 } from "@/config/typography";
 import FormatLastSeen from "../../component/common/date-format";
 import { useSelector } from "react-redux";
 import { VscLoading } from "react-icons/vsc";
 import { Helmet } from "react-helmet-async";
-import { HiOutlineDotsVertical } from "react-icons/hi";
-import { BiLoader } from "react-icons/bi";
 import { useNanny } from "../../zustand";
+import { useChat } from "../../zustand/chat";
 
 export default function ForFamily() {
   const userData = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const location = useLocation(); // Use useLocation to track changes
+  const location = useLocation(); 
   const [listData, setListData] = useState([]);
   const [modalData, setModalData] = useState({});
   const [filterList, setFilterList] = useState([]);
@@ -69,13 +62,11 @@ export default function ForFamily() {
     childrenAges: [],
     budget: "",
     status: "pending",
-    schedule: "", // Single string that will contain combined days and timing, like "Monday Wednesday Friday Evening (4 PM - 8 PM)"
-    timing: "", // Timing selected from dropdown
-    to: "", // Timing selected from dropdown
+    schedule: "", 
+    timing: "",
+    to: "", 
     selectedDays: [],
-    // budget: userData?.budget,
-    // startTime: null,
-    // endTime: null,
+    
   });
 
 useEffect(()=>{
@@ -129,10 +120,7 @@ useEffect(()=>{
     getData();
   }, []);
 
-  useEffect(() => {
-    // This effect will run when the component mounts and whenever the location changes
-    // console.log("filterList updated:", filterList);
-  }, [filterList, location]); // Include location in the dependency array
+
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -144,7 +132,6 @@ useEffect(()=>{
     const query = e.target.value.toLowerCase();
 
     if (!query) {
-      // If the input is empty, clear the filterList to show banner and filter
       setFilterList([]);
       return;
     }
@@ -179,19 +166,10 @@ useEffect(()=>{
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (modalData._id) {
-  //     setBooking((prevBooking) => ({
-  //       ...prevBooking,
-  //       nannyId: modalData._id, // Set nannyId when modalData is available
-  //     }));
-  //   }
-  // }, [modalData]);
 
   const showToast = (message, type) => {
     setToast({ isVisible: true, message, type });
 
-    // Auto-hide after 3 seconds
     setTimeout(() => {
       setToast({ ...toast, isVisible: false });
     }, 3000);
@@ -314,36 +292,9 @@ useEffect(()=>{
     setBooking({ ...booking, childrenAges: newAges });
   };
 
-  // Handle day selection
-  const handleDaySelection = (day) => {
-    // // Check if the timing is selected
-    // if (!booking.timing) {
-    //   alert("Please select a timing first.");
-    //   return;
-    // }
-
-    // Toggle day selection
-    let updatedDays = [...booking.selectedDays];
-    if (updatedDays.includes(day)) {
-      // Remove the day if it's already selected
-      updatedDays = updatedDays.filter((item) => item !== day);
-    } else {
-      // Add the day if it's not selected
-      updatedDays.push(day);
-    }
-
-    // Update the selectedDays array
-    setBooking({
-      ...booking,
-      selectedDays: updatedDays,
-    });
-  };
-
-  // Handle timing selection
   const handleTimingSelection = (e) => {
     const selectedTiming = e.target.value;
 
-    // Update the timing in booking
     setBooking({ ...booking, timing: selectedTiming });
   };
   const generateSchedule = () => {
@@ -367,7 +318,7 @@ useEffect(()=>{
 
     const formatDateWithDayAndMonth = (date) => {
       const day = date.toLocaleDateString("en-GB", { weekday: "long" });
-      const numericDate = date.toLocaleDateString("en-GB"); // Format: DD/MM/YYYY
+      const numericDate = date.toLocaleDateString("en-GB"); 
       return `${day}, ${numericDate}`;
     };
 
@@ -390,37 +341,35 @@ useEffect(()=>{
     const endPeriod = getPeriodOfDay(endDate.getHours());
     const endTime = formatTime(endDate);
 
-    // Check if the start and end dates are the same
     if (startDate.toLocaleDateString() === endDate.toLocaleDateString()) {
       return `${startFormattedDate} ${startPeriod} (${startTime} - ${endTime})`;
     }
 
-    // Different dates
     return `${startFormattedDate} ${startPeriod} (${startTime}) to ${endFormattedDate} ${endPeriod} (${endTime})`;
   };
 
   const handleTimingtoSelection = (e) => {
     const selectedTiming = e.target.value;
 
-    // Update the timing in booking
     setBooking({ ...booking, to: selectedTiming });
     generateSchedule();
   };
 
-  // Use the generated schedule
   const schedule = generateSchedule();
 
   booking.schedule = schedule;
 
-  const { setIsOpen, isOpenTable } = useNanny();
+  const {  isOpenTable } = useNanny();
 
   const [allDatasource, setAllDatasource] = useState([]);
-
+    const {chat,setChat}=useChat()
+  console.log('chatndasdasd', chat)
   const getAllData = () => {
     Get("/booking", null, { parentId: userData?._id })
       .then((res) => {
         if (res?.data) {
           const bookingPromises2 = res.data.map((item, index) => {
+            const user = res?.data || {};
             return {
               location: item.location,
               childrenCount: item.childrenCount,
@@ -440,8 +389,11 @@ useEffect(()=>{
                   {item.status}
                 </span>
               ),
-
-    
+              firstName: user.firstName + " " + user.lastName,
+              user: user,
+              email: user.email,
+              region: user.region,
+              ...item
             };
           }
          
@@ -453,6 +405,19 @@ useEffect(()=>{
           Promise.all(bookingPromises2)
             .then((userData) => {
               setAllDatasource(userData);
+               console.log('userDatasasasa', userData)
+              let user = userData?.filter(
+                ({ rawStatus }) => rawStatus === "approved"
+              );
+              console.log('user', user)
+
+              let uniqueUsers = [
+                ...new Map(
+                  user?.map((item) => [item?.user?._id, item])
+                ).values(),
+              ];
+              console.log('uniqueUsers', uniqueUsers)
+              setChat(uniqueUsers)
             })
             .catch((err) => {
               console.error("Error resolving booking details:", err);
@@ -469,12 +434,10 @@ useEffect(()=>{
   }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10; // Change this to adjust the number of rows per page
+  const rowsPerPage = 10;
 
-  // Calculate total pages
   const totalPages = Math.ceil(allDatasource.length / rowsPerPage);
 
-  // Get the data for the current page
   const paginatedData = allDatasource
     ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     ?.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
@@ -715,31 +678,6 @@ useEffect(()=>{
               {showBooking === true ? (
                 <>
                   <h3 className="text-lg font-bold mt-4 ">Booking</h3>
-
-                  {/* <div className="flex flex-wrap gap-1 my-2">
-                    {[
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                      "Sunday",
-                    ].map((day, index) => (
-                      <span
-                        key={index}
-                        onClick={() => handleDaySelection(day)}
-                        className={`py-1 px-3 border rounded-full text-gray-700 cursor-pointer text-sm ${
-                          booking.selectedDays.includes(day)
-                            ? "border-red-600 text-red-800"
-                            : ""
-                        }`}
-                      >
-                        {day}
-                      </span>
-                    ))}
-                  </div> */}
-
                   <div className="mt-3">
                     <h3 className="text-sm mb-1 font-semibold">Start:</h3>
                     <input
@@ -758,13 +696,6 @@ useEffect(()=>{
                       className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
                     />
                   </div>
-                  {/* <div className="mb-2">
-                    <h3 className="text-sm font-semibold  mb-0.5">Days:</h3>
-                    <span className="font-normal text-xs text-slate-600">
-                      {booking.selectedDays.length &&
-                        booking.selectedDays.join(", ").trim("")}
-                    </span>
-                  </div> */}
                   <div>
                     <h3 className="text-sm font-semibold mb-0.5">
                       Working Schedule:

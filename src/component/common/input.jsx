@@ -11,11 +11,13 @@ export default function InputField(props) {
     placeholder,
     inputClass,
     disabled,
+    name
   } = props;
   return (
     // <form>
     <div className="relative">
       <input
+      name={name}
         type={type}
         value={value}
         onChange={onChange}
