@@ -31,25 +31,22 @@ export default function AuthSignIn() {
   });
   const user = useSelector((state) => state?.user);
 
-  useEffect(()=>{
+  useEffect(() => {
     const token = localStorage.getItem("token");
-  if(token && user?.role== "user"){
-    if(!user?.selectPackage){
-      navigate("/packages")
+    if (token && user?.role == "user") {
+      if (!user?.selectPackage) {
+        navigate("/packages");
+      }
+      navigate("/dashboard/for-family");
+    } else if (token && user?.role == "nanny") {
+      if (!user?.selectPackage?._id) {
+        navigate("/packages");
+      }
+      navigate("/dashboard/for-nanny");
+    } else if (token && user?.role == "admin") {
+      navigate("/admin-dashboard/");
     }
-    navigate("/dashboard/for-family")
-
-  }else if(token && user?.role== "nanny"){
-    if(!user?.selectPackage?._id){
-      navigate("/packages")
-    }
-    navigate("/dashboard/for-nanny")
-
-  }else if( token && user?.role== "admin"){
-    navigate("/admin-dashboard/")
-
-  }
-},[])
+  }, []);
 
   const fillModel = (key, val) => {
     setModel((prevModel) => ({
@@ -65,14 +62,14 @@ export default function AuthSignIn() {
       setToast({ ...toast, isVisible: false });
     }, 3000);
   };
- 
-const [loading,setLoading]=useState(false)
+
+  const [loading, setLoading] = useState(false);
   const save = () => {
     if (!model.email || !model.password) {
       showToast("Email and password are required.", "error");
       return;
     }
-    setLoading(true)
+    setLoading(true);
     model.isSuccessfull = true;
     Post("auth/login", model)
       .then((res) => {
@@ -80,26 +77,24 @@ const [loading,setLoading]=useState(false)
           dispatch(add(res?.data?.user));
           storeData("token", res.data?.token);
 
-       
-          setTimeout(()=>{
-            setLoading(false)
+          setTimeout(() => {
+            setLoading(false);
             navigate(
               res?.data?.user?.role === "admin"
                 ? "/admin-dashboard"
                 : "/welcome-dashboard",
               { state: { loggedIn: true } }
             );
-          },2000)
+          }, 2000);
         } else {
-          
           showToast("Unexpected response format.", "error");
         }
       })
       .catch((err) => {
-        setTimeout(()=>{
-          setLoading(false)
+        setTimeout(() => {
+          setLoading(false);
           showToast("Login failed. Please check your credentials.", "error");
-        },2000)
+        }, 2000);
       });
   };
 
@@ -112,31 +107,29 @@ const [loading,setLoading]=useState(false)
     setForgetPassword(true);
   };
 
-  const [isForgot,setIsForgot]=useState(false)
+  const [isForgot, setIsForgot] = useState(false);
   const handleOtp = () => {
     if (!model.email) {
       showToast("Email is required.", "error");
       return;
     }
-    setIsForgot(true)
+    setIsForgot(true);
     Post("auth/forgotpassword", model)
       .then((res) => {
         setOtpData({ ...res?.data });
-       
-        
-        setTimeout(()=>{
+
+        setTimeout(() => {
           showToast("OTP sent to your email", "success");
           setForgetPassword(false);
           setOtp(true);
-          setIsForgot(false)
-        },2000)
+          setIsForgot(false);
+        }, 2000);
       })
       .catch((err) => {
-        setTimeout(()=>{
-        
+        setTimeout(() => {
           showToast("Login failed. Please check your credentials.", "error");
-          setIsForgot(false)
-        },2000)
+          setIsForgot(false);
+        }, 2000);
       });
   };
   const handleOtpComplete = (otp) => {
@@ -145,27 +138,26 @@ const [loading,setLoading]=useState(false)
     setResetPassword(true);
   };
 
-  const[isRecovery,setIsRecovery]=useState(false)
+  const [isRecovery, setIsRecovery] = useState(false);
   const RecoverPassword = () => {
     model.resetToken = otpData.resetPasswordToken;
     model.otp = otpData.resetPasswordOTP;
-    setIsRecovery(true)
+    setIsRecovery(true);
     Post("auth/resetpassword", model)
       .then((res) => {
-        setTimeout(()=>{
+        setTimeout(() => {
           showToast("Password Recover Successfully", "success");
-          
-          setIsRecovery(false)
+
+          setIsRecovery(false);
           setLogin(true);
           setResetPassword(false);
-        },2000)
+        }, 2000);
       })
       .catch((err) => {
-        setTimeout(()=>{
-       
-          setIsRecovery(false)
+        setTimeout(() => {
+          setIsRecovery(false);
           showToast(err.message, "error");
-        },2000)
+        }, 2000);
       });
   };
 
@@ -207,21 +199,22 @@ const [loading,setLoading]=useState(false)
                 </button>{" "}
                 <H6 className="text-center py-3 capitalize ">Log In</H6>
               </div>
-              <div className="md:w-2/3 px-2 w-full mx-auto text-center pb-14 pt-8">
+              <form className="md:w-2/3 px-2 w-full mx-auto text-center pb-14 pt-8">
                 <div className="mb-[35px]">
                   <InputField
                     type="text"
                     label="Email*"
+                    required={true}
                     value={model.email || ""}
                     onChange={(e) => fillModel("email", e.target.value)}
                     className="input-class"
                   />
                 </div>
-
                 <div className="">
                   <InputField
                     type="password"
                     label="Password*"
+                    required={true}
                     value={model.password || ""}
                     onChange={(e) => fillModel("password", e.target.value)}
                     inputClass="bg-transparent mt-4 px-6 py-3 rounded-full border-gray-300 border
@@ -243,7 +236,11 @@ const [loading,setLoading]=useState(false)
                   onClick={save}
                   disabled={loading}
                 >
-                  {loading ? <VscLoading className=" animate-spin w-7 h-7 mx-auto"/> :"Next"}
+                  {loading ? (
+                    <VscLoading className=" animate-spin w-7 h-7 mx-auto" />
+                  ) : (
+                    "Next"
+                  )}
                 </Button>
                 <img src={line} />
                 <Font2 className="pt-4 text-center">
@@ -259,7 +256,7 @@ const [loading,setLoading]=useState(false)
                     Get Started{" "}
                   </span>
                 </Font2>
-              </div>
+              </form>
             </div>
           )}
           {forgetpassword && (
@@ -269,7 +266,7 @@ const [loading,setLoading]=useState(false)
                   className="absolute top-[40%] left-[30px]"
                   onClick={() => {
                     setForgetPassword(false);
-                    setLogin(true)
+                    setLogin(true);
                   }}
                 >
                   {" "}
@@ -299,7 +296,11 @@ const [loading,setLoading]=useState(false)
                   onClick={handleOtp}
                   disabled={isForgot}
                 >
-                  {isForgot ?  <VscLoading className=" animate-spin w-7 h-7 mx-auto"/>:"Next" }
+                  {isForgot ? (
+                    <VscLoading className=" animate-spin w-7 h-7 mx-auto" />
+                  ) : (
+                    "Next"
+                  )}
                 </Button>
               </div>
             </div>
@@ -366,7 +367,11 @@ const [loading,setLoading]=useState(false)
                   onClick={RecoverPassword}
                   disabled={isRecovery}
                 >
-              {  isRecovery?    <VscLoading className=" animate-spin w-7 h-7 mx-auto"/>:"submit"}
+                  {isRecovery ? (
+                    <VscLoading className=" animate-spin w-7 h-7 mx-auto" />
+                  ) : (
+                    "submit"
+                  )}
                 </Button>
               </div>
             </div>

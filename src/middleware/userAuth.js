@@ -20,7 +20,7 @@ const withUserDetails = (WrappedComponent) => {
 
     const fetchUserDetails = async (token) => {
       try {
-        const response = await fetch(`http://localhost:5000/auth/get-user`, {
+        const response = await fetch(`https://nany-backend.vercel.app/auth/get-user`, {
           method: "GET", 
           headers: {
             Authorization: token, 
