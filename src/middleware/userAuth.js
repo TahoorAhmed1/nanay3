@@ -7,7 +7,6 @@ const withUserDetails = (WrappedComponent) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-console.log('error', error)
     useEffect(() => {
       const userCookie = localStorage.getItem("token");
 
@@ -49,14 +48,14 @@ console.log('error', error)
     if (error) {
       return <div>Error: {error}</div>;
     }
-    console.log('userDetails', userDetails)
 
-    if(userDetails?.role == "user"){
+    if(userDetails?.role !== "admin" && !userDetails?.selectPackage?._id   ){
+        return       navigate("/package")
+    }else{
+      if(userDetails?.role !== "admin" && userDetails?.selectPackage?._id ){
         return <WrappedComponent {...props} userDetails={userDetails} />;
     }
 
-    if(userDetails?.role == "nanny" && !userDetails?.selectPackage   ){
-        return       navigate("/package")
     }
 
   };

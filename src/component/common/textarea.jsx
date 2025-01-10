@@ -1,5 +1,5 @@
 import React from "react";
-import { Font2, H5 } from "@/config/typography";
+import { Font2 } from "@/config/typography";
 
 export default function TextArea(props) {
   const {
@@ -13,7 +13,6 @@ export default function TextArea(props) {
     rows,
   } = props;
   return (
-    // <form>
     <div className="relative">
       <textarea
         disabled={disabled}
@@ -36,6 +35,5 @@ export default function TextArea(props) {
         <Font2>{label}</Font2>
       </div>
     </div>
-    // </form>
   );
 }

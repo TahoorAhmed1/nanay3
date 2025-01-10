@@ -35,11 +35,12 @@ import { VscLoading } from "react-icons/vsc";
 import { Helmet } from "react-helmet-async";
 import { useNanny } from "../../zustand";
 import { useChat } from "../../zustand/chat";
+import { BiLoader } from "react-icons/bi";
 
 export default function ForFamily() {
   const userData = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
   const [listData, setListData] = useState([]);
   const [modalData, setModalData] = useState({});
   const [filterList, setFilterList] = useState([]);
@@ -62,30 +63,25 @@ export default function ForFamily() {
     childrenAges: [],
     budget: "",
     status: "pending",
-    schedule: "", 
+    schedule: "",
     timing: "",
-    to: "", 
+    to: "",
     selectedDays: [],
-    
   });
 
-useEffect(()=>{
-  const token = localStorage.getItem("token");
-  if(token !== "" && userData.role =="user"){
-    navigate("/dashboard/for-family")
-  }else if(token && userData?.role== "nanny"){
-    navigate("/dashboard/for-nanny")
-
-  }else if( token && userData?.role== "admin"){
-    navigate("/admin-dashboard/")
-
-  }
-  else if(token !== ""){
-    navigate("/auth/sign-in")
-  }else{
-    
-  }
-},[])
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token !== "" && userData.role == "user") {
+      navigate("/dashboard/for-family");
+    } else if (token && userData?.role == "nanny") {
+      navigate("/dashboard/for-nanny");
+    } else if (token && userData?.role == "admin") {
+      navigate("/admin-dashboard/");
+    } else if (token !== "") {
+      navigate("/auth/sign-in");
+    } else {
+    }
+  }, []);
 
   const fillModel = (key, val) => {
     setBooking({ ...booking, [key]: val });
@@ -108,7 +104,6 @@ useEffect(()=>{
   const getDataById = (id) => {
     Get(`/auth/${id}`)
       .then((res) => {
-        console.log("Fetched nanny data:", res?.data); // Debugging line
         setModalData(res?.data);
       })
       .catch((err) => {
@@ -119,8 +114,6 @@ useEffect(()=>{
   useEffect(() => {
     getData();
   }, []);
-
-
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -165,7 +158,6 @@ useEffect(()=>{
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
 
   const showToast = (message, type) => {
     setToast({ isVisible: true, message, type });
@@ -318,7 +310,7 @@ useEffect(()=>{
 
     const formatDateWithDayAndMonth = (date) => {
       const day = date.toLocaleDateString("en-GB", { weekday: "long" });
-      const numericDate = date.toLocaleDateString("en-GB"); 
+      const numericDate = date.toLocaleDateString("en-GB");
       return `${day}, ${numericDate}`;
     };
 
@@ -359,12 +351,14 @@ useEffect(()=>{
 
   booking.schedule = schedule;
 
-  const {  isOpenTable } = useNanny();
+  const { isOpenTable } = useNanny();
 
   const [allDatasource, setAllDatasource] = useState([]);
-    const {chat,setChat}=useChat()
-  console.log('chatndasdasd', chat)
+  const { chat, setChat } = useChat();
+  const [isBokkingLoading, setLoadingBooking] = useState(false);
+
   const getAllData = () => {
+    setLoadingBooking(true);
     Get("/booking", null, { parentId: userData?._id })
       .then((res) => {
         if (res?.data) {
@@ -375,7 +369,7 @@ useEffect(()=>{
               childrenCount: item.childrenCount,
               childrenAges: item.childrenAges.join(", "),
               schedule: item.schedule,
-              createdAt:item?.createdAt,
+              createdAt: item?.createdAt,
               status: (
                 <span
                   className={`font-bold capitalize ${
@@ -393,40 +387,49 @@ useEffect(()=>{
               user: user,
               email: user.email,
               region: user.region,
-              ...item
+              ...item,
             };
-          }
-         
-  
-           
-           
-          );
+          });
 
           Promise.all(bookingPromises2)
             .then((userData) => {
               setAllDatasource(userData);
-               console.log('userDatasasasa', userData)
+              console.log("userDatasasasa", userData);
               let user = userData?.filter(
                 ({ rawStatus }) => rawStatus === "approved"
               );
-              console.log('user', user)
+              console.log("user", user);
 
               let uniqueUsers = [
                 ...new Map(
                   user?.map((item) => [item?.user?._id, item])
                 ).values(),
               ];
-              console.log('uniqueUsers', uniqueUsers)
-              setChat(uniqueUsers)
+
+              setChat(uniqueUsers);
+
+              setTimeout(() => {
+                setLoadingBooking(false);
+              }, 2000);
             })
             .catch((err) => {
               console.error("Error resolving booking details:", err);
+              setTimeout(() => {
+                setLoadingBooking(false);
+              }, 2000);
             });
         } else {
           console.log("No bookings data found.");
+          setTimeout(() => {
+            setLoadingBooking(false);
+          }, 2000);
         }
       })
-      .catch((err) => {});
+      .catch((err) => {
+        setTimeout(() => {
+          setLoadingBooking(false);
+        }, 2000);
+      });
   };
 
   useEffect(() => {
@@ -453,7 +456,7 @@ useEffect(()=>{
       setCurrentPage(currentPage + 1);
     }
   };
-  
+
   return (
     <>
       <Helmet>
@@ -481,95 +484,97 @@ useEffect(()=>{
           <Hero />
         </div>
       )}
-      <>
+      <div className="min-h-[60vh]">
         {isOpenTable ? (
-          <div className="md:px-6 px-3 mb-20 ">
-            
-            <div className="  container mx-auto  w-full  rounded-lg overflow-x-auto ">
-             <table className="w-full shadow-lg rounded-lg overflow-scroll">
-               <thead>
-                 <tr className="bg-gradient-to-r from-[#FF6F61] to-[#FF9473] text-white">
-                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
-                     S.No
-                   </th>
-                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
-                     Location
-                   </th>
-                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
-                     Children Count
-                   </th>
-                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
-                     Children Ages
-                   </th>
-                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
-                     Schedule
-                   </th>
-                   <th className="py-4 px-6 text-left text-[14px] font-bold uppercase">
-                     Status
-                   </th>
-                 </tr>
-               </thead>
-               <tbody className="divide-y divide-gray-200">
-                 {paginatedData?.map((item, index) => (
-                   <tr
-                     key={index}
-                     className={`${
-                       index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                     } hover:bg-[#FFEBE9] transition-colors duration-200`}
-                   >
-                     <td className="py-4 px-6 text-sm text-gray-800 font-medium">
-                       {(currentPage - 1) * rowsPerPage + index + 1}
-                     </td>
-                     <td className="py-4 px-6 text-sm text-gray-700">
-                       {item.location || "N/A"}
-                     </td>
-                     <td className="py-4 px-6 text-sm text-gray-700">
-                       {item.childrenCount || "N/A"}
-                     </td>
-                     <td className="py-4 px-6 text-sm text-gray-700">
-                       {item.childrenAges || "N/A"}
-                     </td>
-                     <td className="py-4 px-6 text-sm text-gray-700 max-w-[200px]">
-                       {item.schedule || "N/A"}
-                     </td>
-                     <td className="py-4 px-6 text-sm">
-                       <span
-                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                           item.status === "approved"
-                             ? "bg-green-100 text-green-800"
-                             : "bg-blue-100 text-blue-800"
-                         } capitalize`}
-                       >
-                         {item.status}
-                       </span>
-                     </td>
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
-       
-             {/* Pagination Controls */}
-           </div>
-             <div className="flex items-center justify-center my-6 space-x-4">
-               <button
-                 onClick={handlePrevious}
-                 disabled={currentPage === 1}
-                 className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-               >
-                 Previous
-               </button>
-               <span className="text-gray-700 font-medium">
-                 Page <span className="font-bold">{currentPage}</span> of{" "}
-                 <span className="font-bold">{totalPages}</span>
-               </span>
-               <button
-                 onClick={handleNext}
-                 disabled={currentPage === totalPages}
-                 className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-               >
-                 Next
-               </button>
-             </div>
+          <div className="w-full ">
+            {isBokkingLoading ? (
+              <div className="flex w-full  min-h-[60vh] mx-auto justify-center items-center ">
+                <BiLoader className="w-8 h-8 mx-auto animate-spin " />
+              </div>
+            ) : (
+              <div className="md:px-6 px-3 mb-20">
+      <div className="container mx-auto w-full rounded-lg overflow-x-auto">
+        <table className="w-full shadow-lg rounded-lg overflow-scroll">
+          <thead>
+            <tr className="bg-gradient-to-r from-[#FF6F61] to-[#FF9473] text-white">
+              {["S.No", "Location", "Children Count", "Children Ages", "Schedule", "Status"].map((header) => (
+                <th key={header} className="py-4 px-6 text-left text-[14px] font-bold uppercase">
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {paginatedData?.length > 0 ? (
+              paginatedData.map((item, index) => (
+                <tr
+                  key={index}
+                  className={`${
+                    index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                  } hover:bg-[#FFEBE9] transition-colors duration-200`}
+                >
+                  <td className="py-4 px-6 text-sm text-gray-800 font-medium">
+                    {(currentPage - 1) * rowsPerPage + index + 1}
+                  </td>
+                  <td className="py-4 px-6 text-sm text-gray-700">
+                    {item.location || "N/A"}
+                  </td>
+                  <td className="py-4 px-6 text-sm text-gray-700">
+                    {item.childrenCount || "N/A"}
+                  </td>
+                  <td className="py-4 px-6 text-sm text-gray-700">
+                    {item.childrenAges || "N/A"}
+                  </td>
+                  <td className="py-4 px-6 text-sm text-gray-700 max-w-[200px]">
+                    {item.schedule || "N/A"}
+                  </td>
+                  <td className="py-4 px-6 text-sm">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${
+                        item.status === "approved"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="text-center py-6 text-gray-700 font-medium">
+                  No Data Found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+        {paginatedData?.length > 0 && (
+          <div className="flex items-center justify-center my-10 space-x-4">
+            <button
+              onClick={handlePrevious}
+              disabled={currentPage === 1}
+              className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Previous
+            </button>
+            <span className="text-gray-700 font-medium">
+              Page <span className="font-bold">{currentPage}</span> of{" "}
+              <span className="font-bold">{totalPages}</span>
+            </span>
+            <button
+              onClick={handleNext}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Next
+            </button>
+          </div>
+        )}
+    </div>
+            )}
           </div>
         ) : (
           <div className="md:px-6 px-3  md:mb-[50px] mb-[80px]">
@@ -591,20 +596,21 @@ useEffect(()=>{
                         getDataById={getDataById}
                         modalData={modalData}
                       >
-                       {userData?.selectPackage ?
-                        <button
-                          onClick={() => handleOpenModal(x._id)}
-                          className="mb-4 mt-2 underline decoration-black font-normal"
-                        >
-                          <H5>view profile</H5>
-                        </button>
-                        :<Link
-                        to={"/package"}
-                        className="mb-4 mt-2 underline decoration-black font-normal"
-                      >
-                        <H5>view profile</H5>
-                      </Link>
-                        }
+                        {userData?.selectPackage ? (
+                          <button
+                            onClick={() => handleOpenModal(x._id)}
+                            className="mb-4 mt-2 underline decoration-black font-normal"
+                          >
+                            <H5>view profile</H5>
+                          </button>
+                        ) : (
+                          <Link
+                            to={"/package"}
+                            className="mb-4 mt-2 underline decoration-black font-normal"
+                          >
+                            <H5>view profile</H5>
+                          </Link>
+                        )}
                       </List>
                     ))
                   : listData.map((x, i) => (
@@ -617,29 +623,28 @@ useEffect(()=>{
                         getDataById={getDataById}
                         modalData={modalData}
                       >
-                    
-
-                        {userData?.selectPackage ?
-                        <button
-                        onClick={() => handleOpenModal(x._id)}
-
-                          className="mb-4 mt-2 underline decoration-black font-normal"
-                        >
-                          <H5>view profile</H5>
-                        </button>
-                        :<Link
-                        to={"/package"}
-                        className="mb-4 mt-2 underline decoration-black font-normal"
-                      >
-                        <H5>view profile</H5>
-                      </Link>}
+                        {userData?.selectPackage ? (
+                          <button
+                            onClick={() => handleOpenModal(x._id)}
+                            className="mb-4 mt-2 underline decoration-black font-normal"
+                          >
+                            <H5>view profile</H5>
+                          </button>
+                        ) : (
+                          <Link
+                            to={"/package"}
+                            className="mb-4 mt-2 underline decoration-black font-normal"
+                          >
+                            <H5>view profile</H5>
+                          </Link>
+                        )}
                       </List>
                     ))}
               </div>
             </div>
           </div>
         )}
-      </>
+      </div>
       {/* <List data={listData} getDataById={getDataById} modalData={modalData} /> */}
       <ChatBot />
       <Toast

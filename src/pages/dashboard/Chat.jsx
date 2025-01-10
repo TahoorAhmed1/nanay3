@@ -1,21 +1,13 @@
-
-import Chat from '../../component/chat/chat'
-import DashboardHeader from '../../component/layout/dashboard-header'
+import Chat from "../../component/chat/chat";
+import DashboardHeader from "../../component/layout/dashboard-header";
 
 function ChatMain() {
-
-
-
-
-    
   return (
     <>
-     <DashboardHeader>
-       
-      </DashboardHeader>
-   <Chat/>
+      <DashboardHeader />
+      <Chat />
     </>
-  )
+  );
 }
 
-export default ChatMain
+export default ChatMain;

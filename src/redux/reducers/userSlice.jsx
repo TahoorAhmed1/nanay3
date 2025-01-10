@@ -25,6 +25,7 @@ let initialState = {
   childAgeGroup: null,
   experience: null,
   aboutYourself: null,
+  selectPackage:null,
   personalDetail: {},
 };
 
@@ -38,8 +39,9 @@ export const UserSlice = createSlice({
   initialState,
   reducers: {
     add: (state, action) => {
+      console.log('state,action', state,action)
       state.isSuccessfull = true;
-      // console.log("User logged in:", action.payload); // Check the payload
+      state.selectPackage = action.payload.selectPackage;
       state._id = action.payload._id;
       state.firstName = action.payload.firstName;
       state.lastName = action.payload.lastName;

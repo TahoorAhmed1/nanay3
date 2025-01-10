@@ -36,7 +36,6 @@ import { useChat } from "../../zustand/chat";
 
 export default function ForNanny() {
   const navigate = useNavigate();
-  const location = useLocation(); // Use useLocation to track changes
   const [listData, setListData] = useState([]);
   const [modalData, setModalData] = useState({});
   const [filterList, setFilterList] = useState([]);
@@ -222,14 +221,15 @@ export default function ForNanny() {
         setModalOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   const [allDatasource, setAllDatasource] = useState([]);
-  const {setChat}=useChat()
+  const [isLoading, setLoading] = useState(false);
+  const { setChat } = useChat();
   const handleSubModel = (id) => {
     setSingleBookingId(id);
     getDataByIdPro(id);
@@ -237,6 +237,7 @@ export default function ForNanny() {
   };
 
   const getAllData = () => {
+    setLoading(true);
     Get("/booking", null, { nannyId: userData?._id })
       .then((res) => {
         if (res?.data) {
@@ -274,7 +275,7 @@ export default function ForNanny() {
                 user: user,
                 email: user.email,
                 region: user.region,
-                ...item
+                ...item,
               };
             })
           );
@@ -282,9 +283,7 @@ export default function ForNanny() {
           Promise.all(bookingPromises2)
             .then((userData) => {
               setAllDatasource(userData);
- 
-              console.log(userData,"asdasfS");
-              
+
               let user = userData.filter(
                 ({ rawStatus }) => rawStatus === "approved"
               );
@@ -294,16 +293,29 @@ export default function ForNanny() {
                   user?.map((item) => [item?.user?._id, item])
                 ).values(),
               ];
-              setChat(uniqueUsers)
+              setChat(uniqueUsers);
+              setTimeout(() => {
+                setLoading(false);
+              }, 2000);
             })
             .catch((err) => {
               console.error("Error resolving booking details:", err);
+              setTimeout(() => {
+                setLoading(false);
+              }, 2000);
             });
         } else {
           console.log("No bookings data found.");
+          setTimeout(() => {
+            setLoading(false);
+          }, 2000);
         }
       })
-      .catch((err) => {});
+      .catch((err) => {
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000);
+      });
   };
 
   useEffect(() => {
@@ -357,128 +369,126 @@ export default function ForNanny() {
           <Hero />
         </div>
       )}
-      <div className=" px-3 md:px-6">
-        <div className=" container mx-auto  w-full mb-20 rounded-lg overflow-hidden ">
-          {allDatasource.length == 0 ? (
+      <div className="min-h-[60vh] px-3 md:px-6">
+        <div className=" container mx-auto    w-full mb-20 rounded-lg overflow-hidden ">
+          {isLoading ? (
             <div className="flex w-full  min-h-[60vh] mx-auto justify-center items-center ">
               <BiLoader className="w-8 h-8 mx-auto animate-spin " />
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto  font-montserrat">
+              <div className="overflow-x-auto font-montserrat">
                 <table className="w-full shadow-lg rounded-lg overflow-scroll">
                   <thead>
                     <tr className="bg-gradient-to-r from-[#FF6F61] to-[#FF9473] text-white">
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        S.No
-                      </th>
-                      <th className="py-4 px-6  text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Full Name
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Email
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Budget
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Location
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Children Count
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Children Ages
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Schedule
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Region
-                      </th>
-                      <th className="py-4 px-6 text-left text-[13px] font-semibold  w-full uppercase tracking-wider">
-                        Action
-                      </th>
+                      {[
+                        "S.No",
+                        "Full Name",
+                        "Email",
+                        "Budget",
+                        "Location",
+                        "Children Count",
+                        "Children Ages",
+                        "Schedule",
+                        "Status",
+                        "Region",
+                        "Action",
+                      ].map((header) => (
+                        <th
+                          key={header}
+                          className="py-4 px-6 text-left text-[13px] font-semibold uppercase tracking-wider"
+                        >
+                          {header}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
-
-                  <tbody className="divide-y divide-gray-200 ">
-                    {paginatedData?.map((item, index) => (
-                      <tr
-                        key={index}
-                        className={`${
-                          index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                        } hover:bg-[#FFEBE9] transition-colors duration-200`}
-                      >
-                        <td className="py-4 px-6 text-sm w-full text-gray-800">
-                          {index + 1}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-700 font-medium">
-                          {item.firstName}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-700">
-                          {item.email}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-700">
-                          ${item.budget}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-700">
-                          {item.location || "N/A"}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-700">
-                          {item.childrenCount || "N/A"}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-700">
-                          {item.childrenAges || "N/A"}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-700 max-w-[500px]">
-                          {item.schedule || "N/A"}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              item.status === "approved"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-blue-100 text-blue-800"
-                            } capitalize`}
-                          >
-                            {item.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-600">
-                          {item.region}
-                        </td>
-                        <td className="py-4 px-6 text-sm w-full text-gray-600">
-                          {item.detail}
+                  <tbody className="divide-y divide-gray-200">
+                    {paginatedData?.length === 0 ? (
+                      <tr>
+                        <td colSpan={11}>
+                          <div className="flex justify-center items-center text-2xl min-h-[50vh] font-semibold">
+                            No Data Found
+                          </div>
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      paginatedData.map((item, index) => (
+                        <tr
+                          key={index}
+                          className={`${
+                            index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                          } hover:bg-[#FFEBE9] transition-colors duration-200`}
+                        >
+                          <td className="py-4 px-6 text-sm text-gray-800">
+                            {index + 1}
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-700 font-medium">
+                            {item.firstName}
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-700">
+                            {item.email}
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-700">
+                            ${item.budget}
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-700">
+                            {item.location || "N/A"}
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-700">
+                            {item.childrenCount || "N/A"}
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-700">
+                            {item.childrenAges || "N/A"}
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-700 max-w-[500px]">
+                            {item.schedule || "N/A"}
+                          </td>
+                          <td className="py-4 px-6 text-sm">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                                item.status === "approved"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-blue-100 text-blue-800"
+                              }`}
+                            >
+                              {item.status}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-600">
+                            {item.region}
+                          </td>
+                          <td className="py-4 px-6 text-sm text-gray-600">
+                            {item.detail}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
-              <div className="flex items-center justify-center my-6 space-x-4">
-                <button
-                  onClick={handlePrevious}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  Previous
-                </button>
-                <span className="text-gray-700 font-medium">
-                  Page <span className="font-bold">{currentPage}</span> of{" "}
-                  <span className="font-bold">{totalPages}</span>
-                </span>
-                <button
-                  onClick={handleNext}
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  Next
-                </button>
-              </div>
+              {paginatedData?.length > 0 && (
+                <div className="flex items-center justify-center my-10 space-x-4">
+                  <button
+                    onClick={handlePrevious}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-gray-700 font-medium">
+                    Page <span className="font-bold">{currentPage}</span> of{" "}
+                    <span className="font-bold">{totalPages}</span>
+                  </span>
+                  <button
+                    onClick={handleNext}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 text-sm font-medium text-white bg-[#FF6F61] hover:bg-[#FF9473] rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>

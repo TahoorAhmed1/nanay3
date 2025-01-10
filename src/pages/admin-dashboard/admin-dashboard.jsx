@@ -9,7 +9,7 @@ import AdminDashboardMain from "./home";
 import Users from "./user";
 import Bookings from "./booking";
 import { removeData } from "@/config/helper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Packages from "./packages";
 import { Package } from "lucide-react";
 
@@ -46,6 +46,24 @@ export default function AdminDashboard() {
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
+useEffect(()=>{
+  const token = localStorage.getItem("token");
+  console.log('token', token)
+  if(token !== "" && userData.role === "user"){
+    return  navigate("/dashboard/for-family")
+  }else if(token && userData?.role === "nanny"){
+    return navigate("/dashboard/for-nanny")
+
+  }else if( token && userData?.role === "admin"){
+    return
+
+  }
+  else if(token !== ""){
+    return navigate("/auth/sign-in")
+  }else{
+    return
+  }
+},[])
 
 
   return (

@@ -40,7 +40,7 @@ export default function MemberService({ data, list, button   }) {
                     }}
                   >
                     <H5 className="mb-3 md:mb-5 md:font-bold font-semibold  md:text-[20px] text-[18px]">{item.title}</H5>
-                    <p className="text-[#333333] md:b-5 mb-3 md:text-[18px] text-[16px] font-normal font-quicksand" >{item.para}</p>
+                    <p className="text-[#333333] md:b-5 mb-3 md:text-[18px] text-[16px] font-normal font-quicksand h-[92px]" >{item.para}</p>
                     <Link to={"/for-nannies"}>
                     <p   className="mb-5 text-[#FF6F61] text-[18px] font-semibold underline decoration-[#FF6F61] ">
                       {item.title}

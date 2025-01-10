@@ -7,6 +7,7 @@ import withUserDetails from "../../middleware/userAuth";
 
  function Dashboard({data}) {
   let user=data
+  console.log('user', user)
   return (
     <div className="m-0 p-0">
       <Routes path="">

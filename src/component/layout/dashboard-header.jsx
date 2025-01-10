@@ -109,7 +109,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
     }
   }, [userData]);
 
-console.log('model', model,userData)
+  console.log("model", model, userData);
   const fillModel = (key, val) => {
     setModel((prevModel) => ({
       ...prevModel,
@@ -131,7 +131,7 @@ console.log('model', model,userData)
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      fillModel("image",reader.result);
+      fillModel("image", reader.result);
     };
 
     reader.onerror = () => {
@@ -161,7 +161,6 @@ console.log('model', model,userData)
 
   const handleCloseModal = () => setModalOpen(false);
 
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -178,7 +177,6 @@ console.log('model', model,userData)
     };
   }, []);
 
-  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -235,27 +233,27 @@ console.log('model', model,userData)
   const handleEdit = () => {
     setIsEdit(true);
   };
-  const {setIsOpen}=useNanny()
+  const { setIsOpen } = useNanny();
 
   const Request =
     userData?.role === "user"
       ? [
-        { heading: "Sno", key: "Sno" },
-        { heading: "Location", key: "region" },
-        { heading: "Children Count", key: "childrenCount" },
-        { heading: "Children Ages", key: "childrenAges" },
-        { heading: "Schedule", key: "schedule" },
-        { heading: "status", key: "status" },
-      ]
+          { heading: "Sno", key: "Sno" },
+          { heading: "Location", key: "region" },
+          { heading: "Children Count", key: "childrenCount" },
+          { heading: "Children Ages", key: "childrenAges" },
+          { heading: "Schedule", key: "schedule" },
+          { heading: "status", key: "status" },
+        ]
       : [
-        { heading: "Sno", key: "Sno" },
-        { heading: "Location", key: "region" },
-        { heading: "Children Count", key: "childrenCount" },
-        { heading: "Children Ages", key: "childrenAges" },
-        { heading: "Schedule", key: "schedule" },
-        { heading: "status", key: "status" },
-        { heading: "Detail", key: "detail" },
-      ];
+          { heading: "Sno", key: "Sno" },
+          { heading: "Location", key: "region" },
+          { heading: "Children Count", key: "childrenCount" },
+          { heading: "Children Ages", key: "childrenAges" },
+          { heading: "Schedule", key: "schedule" },
+          { heading: "status", key: "status" },
+          { heading: "Detail", key: "detail" },
+        ];
 
   const [isLoading, setLoading] = useState(false);
 
@@ -264,7 +262,7 @@ console.log('model', model,userData)
     Put(
       "auth",
       {
-        ...model
+        ...model,
       },
       userData?._id
     )
@@ -304,12 +302,13 @@ console.log('model', model,userData)
                 schedule: item.schedule,
                 status: (
                   <span
-                    className={`font-bold capitalize ${item.status === "approved"
+                    className={`font-bold capitalize ${
+                      item.status === "approved"
                         ? "text-sky-800"
                         : item.status === "pending"
-                          ? "text-green-800"
-                          : "text-red-800"
-                      }`}
+                        ? "text-green-800"
+                        : "text-red-800"
+                    }`}
                   >
                     {item.status}
                   </span>
@@ -339,7 +338,7 @@ console.log('model', model,userData)
           setUserDatasource([]);
         }
       })
-      .catch((err) => { });
+      .catch((err) => {});
   };
 
   const getUserData = () => {
@@ -347,11 +346,11 @@ console.log('model', model,userData)
     let id =
       userData?.role === "user"
         ? {
-          parentId: userData?._id,
-        }
+            parentId: userData?._id,
+          }
         : {
-          nannyId: userData?._id,
-        };
+            nannyId: userData?._id,
+          };
     Get(`/booking`, null, id)
       .then((res) => {
         if (res?.data) {
@@ -367,12 +366,13 @@ console.log('model', model,userData)
                 schedule: item.schedule,
                 status: (
                   <span
-                    className={`font-bold capitalize ${item.status === "approved"
+                    className={`font-bold capitalize ${
+                      item.status === "approved"
                         ? "text-sky-800"
                         : item.status === "pending"
-                          ? "text-green-800"
-                          : "text-red-800"
-                      }`}
+                        ? "text-green-800"
+                        : "text-red-800"
+                    }`}
                   >
                     {item.status}
                   </span>
@@ -491,7 +491,7 @@ console.log('model', model,userData)
         console.error(err);
       });
   };
-  console.log('userData', userData)
+  console.log("userData", userData);
 
   return (
     <>
@@ -507,11 +507,17 @@ console.log('model', model,userData)
             >
               <ul className="flex flex-col font-medium lg:flex-row lg:space-x-8 lg:mt-0">
                 {userData.role === "nanny" ? (
-                  <Link to="/dashboard/for-family" className="underline-animation">
+                  <Link
+                    to="/dashboard/for-family"
+                    className="underline-animation"
+                  >
                     <Font1> Nannies</Font1>
                   </Link>
                 ) : (
-                  <Link to="/dashboard/for-nanny" className="underline-animation">
+                  <Link
+                    to="/dashboard/for-nanny"
+                    className="underline-animation"
+                  >
                     <Font1>Families </Font1>
                   </Link>
                 )}
@@ -532,7 +538,10 @@ console.log('model', model,userData)
                 <span className="hidden sm:block">Search</span>
               </button>
               {children}
-              <Link to={"/dashboard/chat"} className="text-black mx-4 flex flex-col items-center text-center">
+              <Link
+                to={"/dashboard/chat"}
+                className="text-black mx-4 flex flex-col items-center text-center"
+              >
                 <img
                   src={IconHeader2}
                   width="20px"
@@ -542,9 +551,10 @@ console.log('model', model,userData)
                 <span className="hidden sm:block">Conversations</span>
               </Link>
               {userData.role !== "nanny" && (
-                <button
+                <Link
+                  to="/dashboard/for-family"
                   className="text-black mx-4 flex flex-col items-center text-center"
-                  onClick={()=>setIsOpen(true)}
+                  onClick={() => setIsOpen(true)}
                 >
                   <img
                     src={IconHeader3}
@@ -553,16 +563,17 @@ console.log('model', model,userData)
                     className="mb-1"
                   />
                   <span className="hidden sm:block">Request</span>
-                </button>
+                </Link>
               )}
               {userData.role !== "nanny" && (
-                <button
+                <Link
+                  to="/dashboard/for-family"
                   className="text-black mx-4 flex flex-col items-center text-center"
-                  onClick={()=>setIsOpen(false)}
+                  onClick={() => setIsOpen(false)}
                 >
-                 <BiUser className="w-[20px] h-[20px] mb-1" />
+                  <BiUser className="w-[20px] h-[20px] mb-1" />
                   <span className="hidden sm:block">Nanny</span>
-                </button>
+                </Link>
               )}
               <button
                 className="text-black mx-4 flex flex-col items-center text-center relative"
@@ -642,15 +653,15 @@ console.log('model', model,userData)
               </button>
               <button
                 className="text-black flex flex-col items-center text-center"
-                onClick={()=>setIsOpen(true)}
+                onClick={() => setIsOpen(true)}
               >
-                            <BiUser className="w-[20px] h-[20px] mb-1" />
+                <BiUser className="w-[20px] h-[20px] mb-1" />
 
                 <span className="text-xs">Nanny</span>
               </button>
               <button
                 className="text-black flex flex-col items-center text-center"
-                onClick={()=>setIsOpen(false)}
+                onClick={() => setIsOpen(false)}
               >
                 <img
                   src={IconHeader3}
@@ -772,7 +783,7 @@ console.log('model', model,userData)
                     // rounded-sm w-[95px] h-[30px] opacity-50 text-lime-950 font-semibold border-lime-950 border-2 my-2 text-md"
                     className="text-lg font-semibold text-teal-700 italic font-lato"
                   >
-                    Active-- 
+                    Active--
                   </span>
                   <h4 className="md:text-sm text-xs font-medium font-lato">
                     <div className="capitalize">{userData?.role}</div>
@@ -785,179 +796,244 @@ console.log('model', model,userData)
                 </div>
               </div>
               <div className="gap-4 grid lg:grid-cols-3 grid-cols-2">
-  <div>
-    <span className="md:text-sm text-xs font-medium font-lato">First Name</span>
-    <InputField
-      disabled={isEdit ? false : true}
-      type="text"
-      value={model.firstName}
-      onChange={(e) => fillModel("firstName", e.target.value)}
-      placeholder={userData?.firstName}
-      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    />
-  </div>
+                <div>
+                  <span className="md:text-sm text-xs font-medium font-lato">
+                    First Name
+                  </span>
+                  <InputField
+                    disabled={isEdit ? false : true}
+                    type="text"
+                    value={model.firstName}
+                    onChange={(e) => fillModel("firstName", e.target.value)}
+                    placeholder={userData?.firstName}
+                    inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                  />
+                </div>
 
-  <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Last Name</span>
-    <InputField
-      disabled={isEdit ? false : true}
-      type="text"
-      value={model.lastName}
-      onChange={(e) => fillModel("lastName", e.target.value)}
-      placeholder={userData?.lastName}
-      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    />
-  </div>
+                <div>
+                  <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                    Last Name
+                  </span>
+                  <InputField
+                    disabled={isEdit ? false : true}
+                    type="text"
+                    value={model.lastName}
+                    onChange={(e) => fillModel("lastName", e.target.value)}
+                    placeholder={userData?.lastName}
+                    inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                  />
+                </div>
 
-  <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Service Type</span>
-    <select
-      name="serviceType"
-      disabled={isEdit ? false : true}
-      value={model.serviceType || userData?.serviceType || ""}
-      onChange={(e) => fillModel("serviceType", e.target.value)}
-      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    >
-      <option value="">Select Service Type</option>
-      <option value="part-time">Part Time</option>
-      <option value="full-time">Full Time</option>
-      <option value="occasional">Occasional</option>
-    </select>
-  </div>
-{userData.role == "nanny" &&  
-  <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Experience</span>
-    <select
-      name="experience"
-      disabled={isEdit ? false : true}
-      value={model.experience || userData?.experience || ""}
-      onChange={(e) => fillModel("experience", e.target.value)}
-      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    >
-      <option value="">Select Experience</option>
-      <option value="toddlers">Toddlers (1-3 years)</option>
-      <option value="pre-school">Preschoolers (4-9 years)</option>
-      <option value="grade-school">Grade-schoolers (10-12 years)</option>
-      <option value="high-school">High-schoolers (13-17 years)</option>
-      <option value="adult">Adults (18+ years)</option>
-    </select>
-  </div>
-}
- {userData.role == "nanny" &&   <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">First Aid Certified</span>
-    <select
-      name="isAIDcertificate"
-      disabled={isEdit ? false : true}
-      value={model.isAIDcertificate || userData?.isAIDcertificate || ""}
-      onChange={(e) => fillModel("isAIDcertificate", e.target.value)}
-      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    >
-      <option value="">Select</option>
-      <option value="true">Yes</option>
-      <option value="false">No</option>
-    </select>
-  </div>}
+                <div>
+                  <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                    Service Type
+                  </span>
+                  <select
+                    name="serviceType"
+                    disabled={isEdit ? false : true}
+                    value={model.serviceType || userData?.serviceType || ""}
+                    onChange={(e) => fillModel("serviceType", e.target.value)}
+                    className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                  >
+                    <option value="">Select Service Type</option>
+                    <option value="part-time">Part Time</option>
+                    <option value="full-time">Full Time</option>
+                    <option value="occasional">Occasional</option>
+                  </select>
+                </div>
+                {userData.role == "nanny" && (
+                  <div>
+                    <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                      Experience
+                    </span>
+                    <select
+                      name="experience"
+                      disabled={isEdit ? false : true}
+                      value={model.experience || userData?.experience || ""}
+                      onChange={(e) => fillModel("experience", e.target.value)}
+                      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                    >
+                      <option value="">Select Experience</option>
+                      <option value="toddlers">Toddlers (1-3 years)</option>
+                      <option value="pre-school">
+                        Preschoolers (4-9 years)
+                      </option>
+                      <option value="grade-school">
+                        Grade-schoolers (10-12 years)
+                      </option>
+                      <option value="high-school">
+                        High-schoolers (13-17 years)
+                      </option>
+                      <option value="adult">Adults (18+ years)</option>
+                    </select>
+                  </div>
+                )}
+                {userData.role == "nanny" && (
+                  <div>
+                    <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                      First Aid Certified
+                    </span>
+                    <select
+                      name="isAIDcertificate"
+                      disabled={isEdit ? false : true}
+                      value={
+                        model.isAIDcertificate ||
+                        userData?.isAIDcertificate ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        fillModel("isAIDcertificate", e.target.value)
+                      }
+                      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                    >
+                      <option value="">Select</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+                )}
 
-{userData.role == "nanny" &&    <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">CPR Certified</span>
-    <select
-      name="isCPRcertificate"
-      disabled={isEdit ? false : true}
-      value={model.isCPRcertificate || userData?.isCPRcertificate || ""}
-      onChange={(e) => fillModel("isCPRcertificate", e.target.value)}
-      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    >
-      <option value="">Select</option>
-      <option value="true">Yes</option>
-      <option value="false">No</option>
-    </select>
-  </div>
-}
- {userData.role == "nanny" &&   <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Driving License</span>
-    <select
-      name="isDrivingLicense"
-      disabled={isEdit ? false : true}
-      value={model.isDrivingLicense || userData?.isDrivingLicense || ""}
-      onChange={(e) => fillModel("isDrivingLicense", e.target.value)}
-      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    >
-      <option value="">Select</option>
-      <option value="true">Yes</option>
-      <option value="false">No</option>
-    </select>
-  </div>}
+                {userData.role == "nanny" && (
+                  <div>
+                    <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                      CPR Certified
+                    </span>
+                    <select
+                      name="isCPRcertificate"
+                      disabled={isEdit ? false : true}
+                      value={
+                        model.isCPRcertificate ||
+                        userData?.isCPRcertificate ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        fillModel("isCPRcertificate", e.target.value)
+                      }
+                      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                    >
+                      <option value="">Select</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+                )}
+                {userData.role == "nanny" && (
+                  <div>
+                    <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                      Driving License
+                    </span>
+                    <select
+                      name="isDrivingLicense"
+                      disabled={isEdit ? false : true}
+                      value={
+                        model.isDrivingLicense ||
+                        userData?.isDrivingLicense ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        fillModel("isDrivingLicense", e.target.value)
+                      }
+                      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                    >
+                      <option value="">Select</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+                )}
 
-{userData.role == "nanny" &&    <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Meal Prep</span>
-    <select
-      name="doMealPrep"
-      disabled={isEdit ? false : true}
-      value={model.doMealPrep || userData?.doMealPrep || ""}
-      onChange={(e) => fillModel("doMealPrep", e.target.value)}
-      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    >
-      <option value="">Select</option>
-      <option value="true">Yes</option>
-      <option value="false">No</option>
-    </select>
-  </div>}
+                {userData.role == "nanny" && (
+                  <div>
+                    <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                      Meal Prep
+                    </span>
+                    <select
+                      name="doMealPrep"
+                      disabled={isEdit ? false : true}
+                      value={model.doMealPrep || userData?.doMealPrep || ""}
+                      onChange={(e) => fillModel("doMealPrep", e.target.value)}
+                      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                    >
+                      <option value="">Select</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+                )}
 
- {userData.role == "nanny" &&   <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Work with Special Needs</span>
-    <select
-      name="careSpecialChild"
-      disabled={isEdit ? false : true}
-      value={model.careSpecialChild || userData?.careSpecialChild || ""}
-      onChange={(e) => fillModel("careSpecialChild", e.target.value)}
-      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    >
-      <option value="">Select</option>
-      <option value="true">Yes</option>
-      <option value="false">No</option>
-    </select>
-  </div>}
+                {userData.role == "nanny" && (
+                  <div>
+                    <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                      Work with Special Needs
+                    </span>
+                    <select
+                      name="careSpecialChild"
+                      disabled={isEdit ? false : true}
+                      value={
+                        model.careSpecialChild ||
+                        userData?.careSpecialChild ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        fillModel("careSpecialChild", e.target.value)
+                      }
+                      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                    >
+                      <option value="">Select</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  </div>
+                )}
 
-{userData.role == "nanny" &&   <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Hourly Rate (Budget)</span>
-    <InputField
-      disabled={isEdit ? false : true}
-      type="text"
-      value={model.budget || userData?.budget || ""}
-      onChange={(e) => fillModel("budget", e.target.value)}
-      placeholder={userData?.budget}
-      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    />
-  </div>}
+                {userData.role == "nanny" && (
+                  <div>
+                    <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                      Hourly Rate (Budget)
+                    </span>
+                    <InputField
+                      disabled={isEdit ? false : true}
+                      type="text"
+                      value={model.budget || userData?.budget || ""}
+                      onChange={(e) => fillModel("budget", e.target.value)}
+                      placeholder={userData?.budget}
+                      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                    />
+                  </div>
+                )}
 
-  {/* Region */}
-  <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Region</span>
-    <select
-      name="region"
-      disabled={isEdit ? false : true}
-      value={model.region || userData?.region || ""}
-      onChange={(e) => fillModel("region", e.target.value)}
-      className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    >
-      <option value="">Select Region</option>
-      <option value="usa">USA</option>
-      <option value="canada">Canada</option>
-    </select>
-  </div>
+                {/* Region */}
+                <div>
+                  <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                    Region
+                  </span>
+                  <select
+                    name="region"
+                    disabled={isEdit ? false : true}
+                    value={model.region || userData?.region || ""}
+                    onChange={(e) => fillModel("region", e.target.value)}
+                    className="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                  >
+                    <option value="">Select Region</option>
+                    <option value="usa">USA</option>
+                    <option value="canada">Canada</option>
+                  </select>
+                </div>
 
-  <div>
-    <span className="md:text-sm text-xs font-medium font-lato mb-10">Zip Code</span>
-    <InputField
-      disabled={isEdit ? false : true}
-      type="text"
-      value={model.zipCode || userData?.zipCode || ""}
-      onChange={(e) => fillModel("zipCode", e.target.value)}
-      placeholder={userData?.zipCode}
-      inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
-    />
-  </div>
-</div>
+                <div>
+                  <span className="md:text-sm text-xs font-medium font-lato mb-10">
+                    Zip Code
+                  </span>
+                  <InputField
+                    disabled={isEdit ? false : true}
+                    type="text"
+                    value={model.zipCode || userData?.zipCode || ""}
+                    onChange={(e) => fillModel("zipCode", e.target.value)}
+                    placeholder={userData?.zipCode}
+                    inputClass="bg-transparent mt-0 mb-3 px-6 py-2 rounded-[5px] border-gray-200 border text-gray-900 text-sm block w-full focus:outline-none"
+                  />
+                </div>
+              </div>
 
               {userData?.role === "nanny" && (
                 <div>
@@ -1039,10 +1115,11 @@ console.log('model', model,userData)
               <div className="relative w-full h-full flex items-center">
                 <div
                   onClick={() => setSelected(true)}
-                  className={`${selected === true
+                  className={`${
+                    selected === true
                       ? "rounded-md bg-[#FF6F61] "
                       : " bg-transparent "
-                    } cursor-pointer w-full flex justify-center h-full text-white`}
+                  } cursor-pointer w-full flex justify-center h-full text-white`}
                 >
                   <button>Your Request</button>
                 </div>
@@ -1145,8 +1222,9 @@ console.log('model', model,userData)
                       Accept
                     </button>
                     <button
-                      className={`rounded-full px-4 py-1  text-white ${isReject ? "bg-gray-600/85" : "bg-red-600/85"
-                        }`}
+                      className={`rounded-full px-4 py-1  text-white ${
+                        isReject ? "bg-gray-600/85" : "bg-red-600/85"
+                      }`}
                       onClick={() => setIsReject(!isReject)}
                     >
                       {isReject ? "cancel" : "Reject"}

@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 import { Get } from "../../config/api-method";
 import { useSelector } from "react-redux";
 
-const socket = io("https://cmxlkvlx-5000.inc1.devtunnels.ms");
+const socket = io(process.env.REACT_APP_API_URL);
 
 export default function Chat() {
   const user = useSelector((state) => state.user);
@@ -20,26 +20,17 @@ export default function Chat() {
   const [showChat, setShowChat] = useState(false); // New state for responsiveness
 
   const getAllDataForNanny = () => {
-    // // Only proceed if id is valid
-    // if (!id.parentId && !id.nannyId) {
-    //   console.error("User ID is not valid.");
-    //   return;
-    // }
-    setLoadingUsers(true)
+    setLoadingUsers(true);
     Get(`/booking`, null, { nannyId: user?._id })
       .then((res) => {
         console.log("res?", res?.data);
         if (res?.data) {
           const bookingPromises = res.data.map((item, index) => {
-            // let id = user?.role === "user" ? : item?.parentId;
-
-            // Skip if id is missing
             if (!item?.nannyId) return;
 
             return Get(`/auth/${item.parentId}`).then((res) => {
               const user = res?.data || {};
 
-              // Safeguard against missing user data
               const username =
                 user.firstName && user.lastName
                   ? `${user.firstName} ${user.lastName}`
@@ -64,10 +55,7 @@ export default function Chat() {
               };
             });
           });
-
-          // Filter out any undefined promises (in case of missing id)
           const validPromises = bookingPromises.filter(Boolean);
-
           Promise.all(validPromises)
             .then((users) => {
               let user = users.filter(
@@ -81,18 +69,16 @@ export default function Chat() {
               ];
 
               setUsers(uniqueUsers);
-              setLoadingUsers(false)
+              setLoadingUsers(false);
             })
-            .catch((err) =>
-              setLoadingUsers(false)
-            );
+            .catch((err) => setLoadingUsers(false));
         }
       })
-      .catch((err) =>   setLoadingUsers(false));
+      .catch((err) => setLoadingUsers(false));
   };
 
   const getAllDataForFamily = () => {
-    setLoadingUsers(true)
+    setLoadingUsers(true);
     Get(`/booking`, null, { parentId: user?._id })
       .then((res) => {
         console.log("res?", res?.data);
@@ -103,7 +89,6 @@ export default function Chat() {
             return Get(`/auth/${item.nannyId}`).then((res) => {
               const user = res?.data || {};
 
-              // Safeguard against missing user data
               const username =
                 user.firstName && user.lastName
                   ? `${user.firstName} ${user.lastName}`
@@ -145,14 +130,12 @@ export default function Chat() {
               ];
 
               setUsers(uniqueUsers);
-              setLoadingUsers(false)
+              setLoadingUsers(false);
             })
-            .catch((err) =>
-              setLoadingUsers(false)
-            );
+            .catch((err) => setLoadingUsers(false));
         }
       })
-      .catch((err) =>   setLoadingUsers(false));
+      .catch((err) => setLoadingUsers(false));
   };
 
   useEffect(() => {
@@ -215,55 +198,53 @@ export default function Chat() {
     <main className="flex min-h-[80vh]  items-center justify-center bg-white mx-auto px-4 lg:px-6 md:py-20 py-10">
       <div className="w-full h-full border border-slate-100/60 rounded-lg shadow-md overflow-hidden">
         <div className="flex w-full">
-          
-            <UserList
-              users={users}
-              onSelectUser={startChat}
-              selectedUser={selectedUser}
-              setCurrentUser={setCurrentUser}
-              showChat={showChat}
-              loadingUser={loadingUser}
-            />
-         
+          <UserList
+            users={users}
+            onSelectUser={startChat}
+            selectedUser={selectedUser}
+            setCurrentUser={setCurrentUser}
+            showChat={showChat}
+            loadingUser={loadingUser}
+          />
+
           {selectedUser ? (
-              <div
-                className={` md:block  w-full ${showChat ? "block" : "hidden"}`}
-              >
-                <ChatRoom
-                  user={user}
-                  currentUser={currentUser}
-                  selectedUser={selectedUser}
-                  messages={messages}
-                  newMessage={newMessage}
-                  setNewMessage={setNewMessage}
-                  sendMessage={sendMessage}
-                  goBack={()=>setShowChat(false)}
-                />
-              </div>
+            <div
+              className={` md:block  w-full ${showChat ? "block" : "hidden"}`}
+            >
+              <ChatRoom
+                user={user}
+                currentUser={currentUser}
+                selectedUser={selectedUser}
+                messages={messages}
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                sendMessage={sendMessage}
+                goBack={() => setShowChat(false)}
+              />
+            </div>
           ) : (
             <div className="flex-1  md:flex hidden  flex-col items-center justify-center text-gray-500 bg-gray-50/40  p-6 ">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-12 text-[#FF6F61] mb-4 animate-bounce"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M4 6h16M4 6a2 2 0 012-2h12a2 2 0 012 2M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6"
-              />
-            </svg>
-            <p className="text-lg font-semibold text-gray-700">
-              Select a user to start chatting
-            </p>
-            <p className="text-sm text-gray-500 mt-2">
-              Click on a user from the list to view your conversations.
-            </p>
-          </div>
-          
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 text-[#FF6F61] mb-4 animate-bounce"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M4 6h16M4 6a2 2 0 012-2h12a2 2 0 012 2M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6"
+                />
+              </svg>
+              <p className="text-lg font-semibold text-gray-700">
+                Select a user to start chatting
+              </p>
+              <p className="text-sm text-gray-500 mt-2">
+                Click on a user from the list to view your conversations.
+              </p>
+            </div>
           )}
         </div>
       </div>

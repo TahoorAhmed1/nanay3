@@ -3,35 +3,61 @@ import { Get } from "@/config/api-method";
 import Table from "@/component/common/table";
 import InputField from "@/component/common/input";
 import Toast from "@/component/common/toast";
-import { PackagePlus , X } from "lucide-react";
+import { PackagePlus, X } from "lucide-react";
 import Button from "@/component/dashboard/button";
 import { Post, Put } from "../../config/api-method";
+import { HiOutlineDotsVertical } from "react-icons/hi";
 
 const AllRequestCol = [
   { heading: "Name", key: "name" },
   { heading: "Price", key: "price" },
   { heading: "Detail", key: "detail" },
+  { heading: "Action", key: "action" },
 ];
 
 export default function Packages() {
   const [allDatasource, setAllDatasource] = useState([]);
   const [filterList, setFilterList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setModalOpen] = useState(false);
-  const modalRef = useRef(null);
+  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    detail: [""],
+  });
+
   const [isUserModal, setUserModal] = useState(false);
   const [toast, setToast] = useState({
     isVisible: false,
     message: "",
     type: "",
   });
+  const [packageId,setPackageId]=useState(null)
+  const handleUpdate=(data)=>{
+    console.log('data', data)
+    setPackageId(data?._id)
+    setFormData({
+      name:data?.name,
+      price:data?.price,
+      detail:data?.detail,
+    })
+    setUpdateModalOpen(true)
+  }
   const [loading, setLoading] = useState(true);
   const getData = () => {
     Get("/package")
       .then((res) => {
         if (res?.data) {
+          const AllUserData = res?.data.map((item) => ({
+            ...item,
+            action: (
+              <button  onClick={() => handleUpdate(item)}>
+                    <HiOutlineDotsVertical />
+              </button>
+            ),
+          }));
           setLoading(false);
-          setAllDatasource(res?.data);
+          setAllDatasource(AllUserData);
         }
       })
       .catch((err) => {
@@ -47,11 +73,7 @@ export default function Packages() {
     getData();
   }, []);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    detail: [""]
-  });
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -72,18 +94,6 @@ export default function Packages() {
     setFormData({ ...formData, detail: updatedDetails });
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setModalOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const showToast = (message, type) => {
     setToast({ isVisible: true, message, type });
@@ -96,30 +106,44 @@ export default function Packages() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-       await Post("/package", formData);
+      await Post(`/package`, formData);
       setTimeout(() => {
-          setUserModal(false)
-          getData()
+        setUserModal(false);
+        setFormData({
+          name: "",
+          price: "",
+          detail: [""],
+        })
+        getData();
       }, 2000);
-      showToast("Plan saved successfully!","success");
+      showToast("Plan saved successfully!", "success");
     } catch (error) {
-      showToast("Failed to save the plan.","error");
+      showToast("Failed to save the plan.", "error");
+    }finally {
+      setFormData({
+        name: "",
+        price: "",
+        detail: [""],
+      })
     }
-  }
+  };
 
   const IDhandle = async (e) => {
     e.preventDefault();
     try {
-       await Put("/package", formData);
-      setTimeout(() => {
-          setUserModal(false)
-          getData()
-      }, 2000);
-      showToast("Plan saved successfully!","success");
+      await Put(`/package`, formData, packageId);
+   
+      showToast("Plan saved successfully!", "success");
     } catch (error) {
-      showToast("Failed to save the plan.","error");
+      showToast("Failed to save the plan.", "error");
+    }finally{
+      setTimeout(() => {
+        setUpdateModalOpen(false);
+        getData();
+        
+      }, 1000);
     }
-  }
+  };
 
   return (
     <section className="px-4">
@@ -150,8 +174,6 @@ export default function Packages() {
         />
       </div>
 
-     
-
       <Toast
         message={toast.message}
         type={toast.type}
@@ -159,49 +181,54 @@ export default function Packages() {
         onClose={() => setToast({ ...toast, isVisible: false })}
       />
 
-{isUserModal && (
+      {isUserModal && (
         <div className="fixed inset-0 w-full z-40 bg-black bg-opacity-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Add New Package</h2>
-            <div >
-                
-            <Button className="h-8 w-8 rounded-full  bg-[#DD7F62]"  onClick={() => setUserModal(false)}>
-              <X className="h-4 w-4 mx-auto text-white" />
-            </Button>
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Add New Package</h2>
+              <div>
+                <Button
+                  className="h-8 w-8 rounded-full  bg-[#DD7F62]"
+                  onClick={() => setUserModal(false)}
+                >
+                  <X className="h-4 w-4 mx-auto text-white" />
+                </Button>
+              </div>
             </div>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name">Name</label>
-              <InputField
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Enter package name"
-              />
-            </div>
-            <div>
-              <label htmlFor="price">Price</label>
-              <InputField
-                id="price"
-                name="price"
-                type="number"
-                
-                value={formData.price}
-                onChange={handleChange}
-                placeholder="Enter package price"
-              />
-            </div>
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Details</label>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="name">Name</label>
+                <InputField
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter package name"
+                />
+              </div>
+              <div>
+                <label htmlFor="price">Price</label>
+                <InputField
+                  id="price"
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleChange}
+                  placeholder="Enter package price"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Details
+                </label>
                 {formData?.detail?.map((detail, index) => (
                   <div key={index} className="flex items-center space-x-2 mt-2">
                     <input
                       type="text"
                       value={detail}
-                      onChange={(e) => handleDetailChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleDetailChange(index, e.target.value)
+                      }
                       placeholder={`Detail ${index + 1}`}
                       className="flex-grow px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#DD7F62] focus:border-[#DD7F62]"
                     />
@@ -223,12 +250,94 @@ export default function Packages() {
                   Add Detail
                 </button>
               </div>
-            <Button type="submit" className="w-full text-[#DD7F62]">
-              Save Package
-            </Button>
-          </form>
+              <Button type="submit" className="w-full text-[#DD7F62]">
+                Save Package
+              </Button>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
+      {isUpdateModalOpen && (
+        <div className="fixed inset-0 w-full z-40 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Update Package</h2>
+              <div>
+                <Button
+                  className="h-8 w-8 rounded-full  bg-[#DD7F62]"
+                  onClick={() =>{
+                    setFormData({
+                      name: "",
+                      price: "",
+                      detail: [""],
+                    })
+                    setUpdateModalOpen(false)}}
+                >
+                  <X className="h-4 w-4 mx-auto text-white" />
+                </Button>
+              </div>
+            </div>
+            <form onSubmit={IDhandle} className="space-y-4">
+              <div>
+                <label htmlFor="name">Name</label>
+                <InputField
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter package name"
+                />
+              </div>
+              <div>
+                <label htmlFor="price">Price</label>
+                <InputField
+                  id="price"
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleChange}
+                  placeholder="Enter package price"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Details
+                </label>
+                {formData?.detail?.map((detail, index) => (
+                  <div key={index} className="flex items-center space-x-2 mt-2">
+                    <input
+                      type="text"
+                      value={detail}
+                      onChange={(e) =>
+                        handleDetailChange(index, e.target.value)
+                      }
+                      placeholder={`Detail ${index + 1}`}
+                      className="flex-grow px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#DD7F62] focus:border-[#DD7F62]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeDetail(index)}
+                      disabled={formData.detail.length === 1}
+                      className="px-2 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addDetail}
+                  className="mt-2 px-4 py-2 bg-[#DD7F62] text-white rounded-md hover:bg-[#DD7F62]/70 transition-colors"
+                >
+                  Add Detail
+                </button>
+              </div>
+              <Button type="submit" className="w-full text-[#DD7F62]">
+                Update Package
+              </Button>
+            </form>
+          </div>
+        </div>
       )}
     </section>
   );

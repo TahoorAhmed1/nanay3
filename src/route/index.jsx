@@ -1,5 +1,5 @@
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ForFamily from "@/pages/for-family.jsx";
 import ForNannies from "@/pages/for-nannies";
 import Dashboard from "@/pages/dashboard/dashoard";
@@ -22,10 +22,6 @@ import AuthAdminSignIn from "../pages/auth/admin-sign-in";
 
 export default function AppRoutes() {
   const isSuccessfull = useSelector((state) => state?.user?.isSuccessfull);
-  const isAdmin = useSelector((state) => state?.user?.role);
-  console.log(isSuccessfull);
-  console.log(isAdmin);
-
   return (
     <>
       <Routes>
@@ -60,7 +56,7 @@ export default function AppRoutes() {
         <Route path="/*" element={<NotFound />} />
         <Route
           path="admin-dashboard/*"
-          element={ isAdmin == "admin" && <AdminDashboard />}
+          element={ <AdminDashboard />}
         />
       </Routes>
     </>

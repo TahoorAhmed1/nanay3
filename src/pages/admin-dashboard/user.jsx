@@ -5,7 +5,6 @@ import { Get, Put, Delete, Post } from "@/config/api-method";
 import Table from "@/component/common/table";
 import { Close } from "@/config/app-constant";
 import edit from "@/assets/dashboard/header-icon/edit.png";
-import { useSelector } from "react-redux";
 import upload from "@/assets/dashboard/header-icon/upload.png";
 import InputField from "@/component/common/input";
 import FileUpload from "@/component/common/upload";
@@ -13,7 +12,7 @@ import TextArea from "@/component/common/textarea";
 import Toast from "@/component/common/toast";
 import OTPInput from "@/component/common/otpField";
 import Button from "@/component/dashboard/button";
-import { Font1, H6, Font2 } from "@/config/typography";
+import {  H6, Font2 } from "@/config/typography";
 import { MdOutlineDeleteSweep } from "react-icons/md";
 
 const AllRequestCol = [
@@ -40,7 +39,6 @@ export default function Users() {
   const UsermodalRef = useRef(null);
   const [isUserActive, setUserActive] = useState(false);
   const UserActiveRef = useRef(null);
-  const [UserId, setUserId] = useState(false);
   const [serviceTypedropdown, setServiceTypeDropdown] = useState(false);
   const serviceTypedropdownRef = useRef(null);
   const [shareNannydropdown, setshareNannyDropdown] = useState(false);

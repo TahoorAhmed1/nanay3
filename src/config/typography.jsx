@@ -14,7 +14,7 @@ export function H2({ className = "", children }) {
 
 export function H3({ className = "", children }) {
   const defaultClasses =
-    "font-[400] leading-[25px] text-[15px] md:leading-[35px] md:text-[25px] lg:leading-[45px] lg:text-[35px] 2xl:leading-[60px] 2xl:text-[50px]";
+    "font-[400] leading-[25px] text-[20px] md:leading-[35px] md:text-[25px] lg:leading-[45px] lg:text-[35px] 2xl:leading-[60px] 2xl:text-[50px]";
 
   return <h3 className={`${defaultClasses} ${className}`}>{children}</h3>;
 }
@@ -49,7 +49,7 @@ export function Font1({ className = "", children }) {
 
 export function Font2({ className = "", children }) {
   const defaultClasses =
-    " font-normal leading-[19px] text-[11px] xl:leading-[21px] md:text-[13px]";
+    " font-normal leading-[19px] text-[13px] xl:leading-[21px] md:text-[13px]";
 
   return <p className={`${defaultClasses} ${className}`}>{children}</p>;
 }

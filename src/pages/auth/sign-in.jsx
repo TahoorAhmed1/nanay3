@@ -30,6 +30,7 @@ export default function AuthSignIn() {
     type: "",
   });
   const user = useSelector((state) => state?.user);
+
   useEffect(()=>{
     const token = localStorage.getItem("token");
   if(token && user?.role== "user"){
@@ -39,7 +40,7 @@ export default function AuthSignIn() {
     navigate("/dashboard/for-family")
 
   }else if(token && user?.role== "nanny"){
-    if(!user?.selectPackage){
+    if(!user?.selectPackage?._id){
       navigate("/packages")
     }
     navigate("/dashboard/for-nanny")
@@ -73,7 +74,6 @@ const [loading,setLoading]=useState(false)
     }
     setLoading(true)
     model.isSuccessfull = true;
-    // console.log(model);
     Post("auth/login", model)
       .then((res) => {
         if (res?.data) {
