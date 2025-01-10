@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // let baseApi = 'https://salmon-betta-shoe.cyclic.app/';
 // let baseApi = "http://localhost:5000/";
-let baseApi = process.env.REACT_APP_API_URL;
+let baseApi =  process.env.REACT_APP_API_URL || 'https://nany-backend.vercel.app/';
 
 let api = axios.create({
   baseURL: baseApi,
@@ -46,6 +46,7 @@ let userGet = async (apiName, body) => {
 };
 
 let Post = (apiName, body) => {
+  console.log(baseApi)
   return new Promise((resolve, reject) => {
     AsyncStorage.getItem("bussAppToken")
       .then((token) => {

@@ -641,7 +641,10 @@ export default function DashboardHeader({ children, onClickSearch }) {
                 <span className="text-xs">Search</span>
               </button>
 
-              <button className="text-black flex flex-col items-center text-center">
+              <Link
+                to={"/dashboard/chat"}
+                className="text-black flex flex-col items-center text-center"
+              >
                 <img
                   src={IconHeader2}
                   width={20}
@@ -650,7 +653,7 @@ export default function DashboardHeader({ children, onClickSearch }) {
                   className="mb-1"
                 />
                 <span className="text-xs">Conversations</span>
-              </button>
+              </Link>
               <button
                 className="text-black flex flex-col items-center text-center"
                 onClick={() => setIsOpen(true)}

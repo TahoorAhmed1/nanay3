@@ -28,7 +28,7 @@ export function H4({ className = "", children }) {
 
 export function H5({ className = "", children }) {
   const defaultClasses =
-    "font-[400] leading-[23px] text-[13px]  sm:leading-[25px] sm:text-[15px] lg:leading-[30px] lg:text-[20px] font-[500]";
+    "font-[400] leading-[23px] text-[15px]  sm:leading-[25px] sm:text-[15px] lg:leading-[30px] lg:text-[20px] font-[500]";
 
   return <h5 className={`${defaultClasses} ${className}`}>{children}</h5>;
 }
